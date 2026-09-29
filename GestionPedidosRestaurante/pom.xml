@@ -10,4 +10,14 @@
         <maven.compiler.release>21</maven.compiler.release>
         <exec.mainClass>sistema.restaurante.GestionPedidosRestaurante</exec.mainClass>
     </properties>
+    
+    <dependencies>
+        <!-- Dependencia para MySQL Connector/J -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <version>8.4.0</version>
+        </dependency>
+    </dependencies>
+    
 </project>
