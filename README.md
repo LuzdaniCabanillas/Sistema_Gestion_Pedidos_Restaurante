@@ -5,7 +5,7 @@
 4. Lenin Anderson Mendo Cotrina
 
 ## PROYECTO FINAL
-Este repositorio es unconsolidado para la T1 del curso *Técnicas de programación orientada a objetos*
+Curso: *Técnicas de programación orientada a objetos*
 
 ### 🧰 Herramientas usadas
 
@@ -15,5 +15,3 @@ Este repositorio es unconsolidado para la T1 del curso *Técnicas de programaci�
   </a>
 </p>
 
-Diagrama:
-![img_1.png](Cap-Pantalla/img_1.png)
