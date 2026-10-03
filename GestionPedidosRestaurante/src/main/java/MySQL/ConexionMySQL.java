@@ -7,19 +7,19 @@ import java.sql.SQLException;
 
 public class ConexionMySQL {
     
-    public static void main(String[] args) {
-        // estos son los Datos de conexión
-        String url = "jdbc:mysql://localhost:3306/sistemaGestionRestaurante";
-        String usuario = "root";
-        String clave = "mysql";
+    private static final String URL = "jdbc:mysql://localhost:3306/sistemaGestionRestaurante";
+    private static final String USUARIO = "root";
+    private static final String CLAVE = "mysql";
 
-        try {
-            // aqui Establecemos la conexión
-            Connection conn = DriverManager.getConnection(url, usuario, clave);
+    public static Connection obtenerConexion() throws SQLException {
+
+        return DriverManager.getConnection(URL, USUARIO, CLAVE);
+
+    }
+
+    public static void main(String[] args) {
+        try (Connection conexion = obtenerConexion()) {
             System.out.println("¡Conexión exitosa a MySQL!");
-            
-            // aqui se cierra la conexión
-            conn.close(); 
         } catch (SQLException e) {
             System.out.println("Error en la conexión: " + e.getMessage());
         }
