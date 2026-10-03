@@ -1,4 +1,5 @@
-package restaurante;
+package modelo;
+
 public class DetallePedido {
 
 	private int id;

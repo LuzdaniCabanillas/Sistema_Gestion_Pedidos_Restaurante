@@ -1,4 +1,9 @@
-package restaurante;
+package modelo;
+
+import modelo.EstadoPedido;
+import modelo.DetallePedido;
+import modelo.Cuenta;
+
 public class Pedido {
 
 	private int id;

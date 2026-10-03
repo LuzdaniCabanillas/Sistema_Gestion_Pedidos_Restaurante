@@ -1,4 +1,4 @@
-package restaurante;
+package modelo;
 public class Mesa {
 
 	private int id;

@@ -1,5 +1,8 @@
 
-package restaurante;
+package modelo;
+
+import modelo.Cajero;
+
 public class Pago {
 
 	private int id;

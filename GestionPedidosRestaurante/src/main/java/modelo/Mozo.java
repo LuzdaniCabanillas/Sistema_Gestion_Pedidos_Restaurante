@@ -1,5 +1,8 @@
 
-package restaurante;
+package modelo;
+
+import modelo.Empleado;
+
 public class Mozo extends Empleado {
 
 	private Pedido pedido;
