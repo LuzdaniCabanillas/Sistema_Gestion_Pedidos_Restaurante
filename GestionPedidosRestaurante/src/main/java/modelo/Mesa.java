@@ -52,7 +52,7 @@ public class Mesa {
     }
 
         
-	public void ocuprar() {
+	public void ocupar() {
             this.estado= "OCUPADO";
 
 	}
@@ -65,5 +65,7 @@ public class Mesa {
         public boolean estaDisponible() {
         return "DISPONIBLE".equals(this.estado);
     }
+
+    
 
 }
