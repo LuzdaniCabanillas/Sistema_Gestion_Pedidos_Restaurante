@@ -9,6 +9,16 @@ public class Mozo extends Empleado {
 
 	private Empleado empleado;
 
+        
+        public Mozo() {
+        super();
+        }
+
+    public Mozo(int id, String nombre, String dni, String turno) {
+        super(id, nombre, dni, turno);
+    }
+        
+        
 	public void tomarPedido() {
 
 	}
