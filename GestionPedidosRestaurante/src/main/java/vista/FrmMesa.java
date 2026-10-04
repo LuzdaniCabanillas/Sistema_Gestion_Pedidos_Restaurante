@@ -1,4 +1,3 @@
-
 package vista;
 
 import javafx.application.Application;
@@ -7,6 +6,7 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -21,8 +21,8 @@ import javafx.stage.Stage;
 import modelo.Mesa;
 import service.MesaService;
 
+public class FrmMesa extends Application {
 
-public class FrmMesa  extends Application {
     private TextField txtId;
     private TextField txtNumero;
     private TextField txtCapacidad;
@@ -39,21 +39,16 @@ public class FrmMesa  extends Application {
 
     private MesaService mesaService;
 
-
     @Override
     public void start(Stage stage) {
 
-       // Servicio de Mesa
         mesaService = new MesaService();
 
-        // Título
         Label lblTitulo = new Label("GESTIÓN DE MESAS");
         lblTitulo.setStyle(
                 "-fx-font-size: 24px;"
                 + "-fx-font-weight: bold;"
         );
-
-        // Campos
         Label lblId = new Label("ID:");
         Label lblNumero = new Label("Número:");
         Label lblCapacidad = new Label("Capacidad:");
@@ -69,17 +64,12 @@ public class FrmMesa  extends Application {
                 "OCUPADA"
         );
 
-// El ID lo genera MySQL
         txtId.setEditable(false);
 
-        // El estado será controlado posteriormente
-        // por la atención de la mesa.
         cboEstado.setDisable(true);
 
-        // Valor inicial
         cboEstado.setValue("DISPONIBLE");
 
-        // Grid de datos
         GridPane formulario = new GridPane();
 
         formulario.setHgap(10);
@@ -98,7 +88,6 @@ public class FrmMesa  extends Application {
         formulario.add(lblEstado, 0, 3);
         formulario.add(cboEstado, 1, 3);
 
-// Botones
         btnNuevo = new Button("NUEVO");
         btnGuardar = new Button("GUARDAR");
         btnActualizar = new Button("ACTUALIZAR");
@@ -116,7 +105,6 @@ public class FrmMesa  extends Application {
                 btnLimpiar
         );
 
-// Tabla
         tablaMesas = new TableView<>();
 
         TableColumn<Mesa, Integer> colId = new TableColumn<>("ID");
@@ -124,22 +112,22 @@ public class FrmMesa  extends Application {
                 new PropertyValueFactory<>("id")
         );
 
-        TableColumn<Mesa, Integer> colNumero =
-                new TableColumn<>("Número");
+        TableColumn<Mesa, Integer> colNumero
+                = new TableColumn<>("Número");
 
         colNumero.setCellValueFactory(
                 new PropertyValueFactory<>("numero")
         );
 
-        TableColumn<Mesa, Integer> colCapacidad =
-                new TableColumn<>("Capacidad");
+        TableColumn<Mesa, Integer> colCapacidad
+                = new TableColumn<>("Capacidad");
 
         colCapacidad.setCellValueFactory(
                 new PropertyValueFactory<>("capacidad")
         );
 
-        TableColumn<Mesa, String> colEstado =
-                new TableColumn<>("Estado");
+        TableColumn<Mesa, String> colEstado
+                = new TableColumn<>("Estado");
 
         colEstado.setCellValueFactory(
                 new PropertyValueFactory<>("estado")
@@ -152,9 +140,8 @@ public class FrmMesa  extends Application {
                 colEstado
         );
 
- tablaMesas.setPrefHeight(250);
+        tablaMesas.setPrefHeight(250);
 
-        // Contenedor principal
         VBox root = new VBox(15);
 
         root.setPadding(new Insets(20));
@@ -167,21 +154,52 @@ public class FrmMesa  extends Application {
                 tablaMesas
         );
 
-        // Escena
         Scene scene = new Scene(root, 800, 600);
 
         stage.setTitle("Gestión de Mesas");
         stage.setScene(scene);
         stage.show();
 
-        // Cargar las mesas de MySQL
         cargarMesas();
+
+        tablaMesas.setOnMouseClicked(event -> {
+
+            Mesa mesaSeleccionada
+                    = tablaMesas.getSelectionModel().getSelectedItem();
+
+            if (mesaSeleccionada != null) {
+
+                txtId.setText(
+                        String.valueOf(mesaSeleccionada.getId())
+                );
+
+                txtNumero.setText(
+                        String.valueOf(mesaSeleccionada.getNumero())
+                );
+
+                txtCapacidad.setText(
+                        String.valueOf(mesaSeleccionada.getCapacidad())
+                );
+
+                cboEstado.setValue(
+                        mesaSeleccionada.getEstado()
+                );
+            }
+        });
+
+        btnGuardar.setOnAction(event -> guardarMesa());
+        
+        btnNuevo.setOnAction(event -> limpiarCampos());
+        btnActualizar.setOnAction(event -> actualizarMesa());
+        btnEliminar.setOnAction(event -> eliminarMesa());
+        btnLimpiar.setOnAction(event -> limpiarCampos());
+
     }
 
     private void cargarMesas() {
 
-        ObservableList<Mesa> lista =
-                FXCollections.observableArrayList(
+        ObservableList<Mesa> lista
+                = FXCollections.observableArrayList(
                         mesaService.listarMesas()
                 );
 
@@ -191,5 +209,152 @@ public class FrmMesa  extends Application {
     public static void main(String[] args) {
         launch(args);
     }
-   
+
+    private void guardarMesa() {
+        try {
+
+            int numero = Integer.parseInt(txtNumero.getText());
+            int capacidad = Integer.parseInt(txtCapacidad.getText());
+
+            boolean registrado
+                    = mesaService.registrarMesa(numero, capacidad);
+
+            if (registrado) {
+
+                mostrarMensaje(
+                        "Éxito",
+                        "La mesa se registró correctamente."
+                );
+
+                cargarMesas();
+                limpiarCampos();
+
+            } else {
+
+                mostrarMensaje(
+                        "Aviso",
+                        "No se pudo registrar la mesa."
+                );
+            }
+
+        } catch (NumberFormatException e) {
+
+            mostrarMensaje(
+                    "Error",
+                    "Número y capacidad deben ser valores numéricos."
+            );
+        }
+    }
+
+    private void mostrarMensaje(String titulo, String mensaje) {
+
+        Alert alerta = new Alert(Alert.AlertType.INFORMATION);
+
+        alerta.setTitle(titulo);
+        alerta.setHeaderText(null);
+        alerta.setContentText(mensaje);
+
+        alerta.showAndWait();
+    }
+
+    private void limpiarCampos() {
+        txtId.clear();
+        txtNumero.clear();
+        txtCapacidad.clear();
+
+        cboEstado.setValue("DISPONIBLE");
+
+        tablaMesas.getSelectionModel().clearSelection();
+    }
+
+    private void actualizarMesa() {
+
+    try {
+
+        if (txtId.getText().isEmpty()) {
+
+            mostrarMensaje(
+                    "Aviso",
+                    "Selecciona una mesa de la tabla."
+            );
+
+            return;
+        }
+
+        int id = Integer.parseInt(txtId.getText());
+        int numero = Integer.parseInt(txtNumero.getText());
+        int capacidad = Integer.parseInt(txtCapacidad.getText());
+
+        String estado = cboEstado.getValue();
+
+        boolean actualizado =
+                mesaService.actualizarMesa(
+                        id,
+                        numero,
+                        capacidad,
+                        estado
+                );
+
+        if (actualizado) {
+
+            mostrarMensaje(
+                    "Éxito",
+                    "La mesa se actualizó correctamente."
+            );
+
+            cargarMesas();
+            limpiarCampos();
+
+        } else {
+
+            mostrarMensaje(
+                    "Aviso",
+                    "No se pudo actualizar la mesa."
+            );
+        }
+
+    } catch (NumberFormatException e) {
+
+        mostrarMensaje(
+                "Error",
+                "Los datos numéricos no son válidos."
+        );
+    }
+}
+
+    private void eliminarMesa() {
+
+    if (txtId.getText().isEmpty()) {
+
+        mostrarMensaje(
+                "Aviso",
+                "Selecciona una mesa de la tabla."
+        );
+
+        return;
+    }
+
+    int id = Integer.parseInt(txtId.getText());
+
+    boolean eliminado =
+            mesaService.eliminarMesa(id);
+
+    if (eliminado) {
+
+        mostrarMensaje(
+                "Éxito",
+                "La mesa se eliminó correctamente."
+        );
+
+        cargarMesas();
+        limpiarCampos();
+
+    } else {
+
+        mostrarMensaje(
+                "Aviso",
+                "No se pudo eliminar la mesa."
+        );
+    }
+}
 }
