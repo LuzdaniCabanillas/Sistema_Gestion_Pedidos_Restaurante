@@ -1,9 +1,9 @@
 package modelo;
 public abstract class Empleado {
 
-	private int id;
+	int id;
 
-	private String nombre;
+	String nombre;
 
 	private String dni;
 

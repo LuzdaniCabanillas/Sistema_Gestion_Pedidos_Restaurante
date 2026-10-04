@@ -218,4 +218,8 @@ public class AtencionMesaService {
 
         return atencionDAO.eliminar(id);
     }
+    
+    public List<Mesa> listarMesas() {
+        return mesaDAO.listar();
+    }
 }

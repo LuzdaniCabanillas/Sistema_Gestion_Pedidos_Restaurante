@@ -66,6 +66,11 @@ public class Mesa {
         return "DISPONIBLE".equals(this.estado);
     }
 
+    @Override
+    public String toString() {
+        return "Mesa" + numero + " - capacidad: " + capacidad + "-" + estado;
+    }
+
     
 
 }

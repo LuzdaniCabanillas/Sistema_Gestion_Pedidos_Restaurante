@@ -1,9 +1,6 @@
-
 package vista;
 
-import java.time.LocalDateTime;
 import javafx.application.Application;
-import static javafx.application.Application.launch;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -11,6 +8,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -20,15 +18,23 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+
 import modelo.AtencionMesa;
+import modelo.Mesa;
+import modelo.Mozo;
+
 import service.AtencionMesaService;
 
+import controlador.MozoDAO;
+
+import java.time.LocalDateTime;
 
 public class FrmAtencionMesa extends Application {
 
     private TextField txtId;
-    private TextField txtMesaId;
-    private TextField txtMozoId;
+    private ComboBox<Mesa> cboMesa;
+    private ComboBox<Mozo> cboMozo;
+
     private TextField txtEstado;
     private TextField txtFechaInicio;
     private TextField txtFechaFin;
@@ -42,15 +48,17 @@ public class FrmAtencionMesa extends Application {
     private TableView<AtencionMesa> tablaAtenciones;
 
     private AtencionMesaService atencionService;
+    private MozoDAO mozoDAO;
 
     @Override
     public void start(Stage stage) {
 
         atencionService = new AtencionMesaService();
+        mozoDAO = new MozoDAO();
 
         // Título
-        Label lblTitulo =
-                new Label("GESTIÓN DE ATENCIÓN DE MESAS");
+        Label lblTitulo
+                = new Label("GESTIÓN DE ATENCIÓN DE MESAS");
 
         lblTitulo.setStyle(
                 "-fx-font-size: 24px;"
@@ -59,16 +67,23 @@ public class FrmAtencionMesa extends Application {
 
         // Etiquetas
         Label lblId = new Label("ID:");
-        Label lblMesaId = new Label("Mesa ID:");
-        Label lblMozoId = new Label("Mozo ID:");
+        Label lblMesa = new Label("Mesa:");
+        Label lblMozo = new Label("Mozo:");
         Label lblEstado = new Label("Estado:");
         Label lblFechaInicio = new Label("Fecha inicio:");
         Label lblFechaFin = new Label("Fecha fin:");
 
         // Campos
         txtId = new TextField();
-        txtMesaId = new TextField();
-        txtMozoId = new TextField();
+        cboMesa = new ComboBox<>();
+        cboMozo = new ComboBox<>();
+
+        ObservableList<Mozo> listaMozos
+                = FXCollections.observableArrayList(
+                        mozoDAO.listar()
+                );
+        cboMozo.setItems(listaMozos);
+
         txtEstado = new TextField();
         txtFechaInicio = new TextField();
         txtFechaFin = new TextField();
@@ -89,11 +104,11 @@ public class FrmAtencionMesa extends Application {
         formulario.add(lblId, 0, 0);
         formulario.add(txtId, 1, 0);
 
-        formulario.add(lblMesaId, 0, 1);
-        formulario.add(txtMesaId, 1, 1);
+        formulario.add(lblMesa, 0, 1);
+        formulario.add(cboMesa, 1, 1);
 
-        formulario.add(lblMozoId, 0, 2);
-        formulario.add(txtMozoId, 1, 2);
+        formulario.add(lblMozo, 0, 2);
+        formulario.add(cboMozo, 1, 2);
 
         formulario.add(lblEstado, 0, 3);
         formulario.add(txtEstado, 1, 3);
@@ -126,43 +141,43 @@ public class FrmAtencionMesa extends Application {
         // Tabla
         tablaAtenciones = new TableView<>();
 
-        TableColumn<AtencionMesa, Integer> colId =
-                new TableColumn<>("ID");
+        TableColumn<AtencionMesa, Integer> colId
+                = new TableColumn<>("ID");
 
         colId.setCellValueFactory(
                 new PropertyValueFactory<>("id")
         );
 
-        TableColumn<AtencionMesa, Integer> colMesa =
-                new TableColumn<>("Mesa");
+        TableColumn<AtencionMesa, Integer> colMesa
+                = new TableColumn<>("Mesa");
 
         colMesa.setCellValueFactory(
                 new PropertyValueFactory<>("mesaId")
         );
 
-        TableColumn<AtencionMesa, Integer> colMozo =
-                new TableColumn<>("Mozo");
+        TableColumn<AtencionMesa, Integer> colMozo
+                = new TableColumn<>("Mozo");
 
         colMozo.setCellValueFactory(
                 new PropertyValueFactory<>("mozoId")
         );
 
-        TableColumn<AtencionMesa, LocalDateTime> colInicio =
-                new TableColumn<>("Fecha inicio");
+        TableColumn<AtencionMesa, LocalDateTime> colInicio
+                = new TableColumn<>("Fecha inicio");
 
         colInicio.setCellValueFactory(
                 new PropertyValueFactory<>("fechaInicio")
         );
 
-        TableColumn<AtencionMesa, LocalDateTime> colFin =
-                new TableColumn<>("Fecha fin");
+        TableColumn<AtencionMesa, LocalDateTime> colFin
+                = new TableColumn<>("Fecha fin");
 
         colFin.setCellValueFactory(
                 new PropertyValueFactory<>("fechaFin")
         );
 
-        TableColumn<AtencionMesa, String> colEstado =
-                new TableColumn<>("Estado");
+        TableColumn<AtencionMesa, String> colEstado
+                = new TableColumn<>("Estado");
 
         colEstado.setCellValueFactory(
                 new PropertyValueFactory<>("estado")
@@ -193,8 +208,8 @@ public class FrmAtencionMesa extends Application {
         );
 
         // Escena
-        Scene scene =
-                new Scene(root, 1000, 650);
+        Scene scene
+                = new Scene(root, 1000, 650);
 
         stage.setTitle(
                 "Gestión de Atención de Mesas"
@@ -208,8 +223,8 @@ public class FrmAtencionMesa extends Application {
         // Seleccionar una fila
         tablaAtenciones.setOnMouseClicked(event -> {
 
-            AtencionMesa seleccionada =
-                    tablaAtenciones
+            AtencionMesa seleccionada
+                    = tablaAtenciones
                             .getSelectionModel()
                             .getSelectedItem();
 
@@ -221,16 +236,12 @@ public class FrmAtencionMesa extends Application {
                         )
                 );
 
-                txtMesaId.setText(
-                        String.valueOf(
-                                seleccionada.getMesaId()
-                        )
+                seleccionarMesa(
+                        seleccionada.getMesaId()
                 );
 
-                txtMozoId.setText(
-                        String.valueOf(
-                                seleccionada.getMozoId()
-                        )
+                seleccionarMozo(
+                        seleccionada.getMozoId()
                 );
 
                 txtEstado.setText(
@@ -289,8 +300,8 @@ public class FrmAtencionMesa extends Application {
 
     private void cargarAtenciones() {
 
-        ObservableList<AtencionMesa> lista =
-                FXCollections.observableArrayList(
+        ObservableList<AtencionMesa> lista
+                = FXCollections.observableArrayList(
                         atencionService.listarAtenciones()
                 );
 
@@ -298,48 +309,50 @@ public class FrmAtencionMesa extends Application {
     }
 
     private void iniciarAtencion() {
+        Mesa mesaSeleccionada = cboMesa.getValue();
+        Mozo mozoSeleccionado = cboMozo.getValue();
 
-        try {
-
-            int mesaId =
-                    Integer.parseInt(
-                            txtMesaId.getText()
-                    );
-
-            int mozoId =
-                    Integer.parseInt(
-                            txtMozoId.getText()
-                    );
-
-            boolean resultado =
-                    atencionService.iniciarAtencion(
-                            mesaId,
-                            mozoId
-                    );
-
-            if (resultado) {
-
-                mostrarMensaje(
-                        "Éxito",
-                        "La atención se inició correctamente."
-                );
-
-                cargarAtenciones();
-                limpiarCampos();
-
-            } else {
-
-                mostrarMensaje(
-                        "Aviso",
-                        "No se pudo iniciar la atención."
-                );
-            }
-
-        } catch (NumberFormatException e) {
+        if (mesaSeleccionada == null) {
 
             mostrarMensaje(
-                    "Error",
-                    "Mesa ID y Mozo ID deben ser números."
+                    "Aviso",
+                    "Selecciona una mesa"
+            );
+
+            return;
+
+        }
+        if (mozoSeleccionado == null) {
+
+            mostrarMensaje(
+                    "Aviso",
+                    "Selecciona una mozo"
+            );
+
+            return;
+
+        }
+        boolean resultado = atencionService.iniciarAtencion(
+                mesaSeleccionada.getId(),
+                mozoSeleccionado.getId()
+        );
+
+        if (resultado) {
+
+            mostrarMensaje(
+                    "Exito",
+                    "La atencion se inicio correctamente."
+            );
+
+            cargarAtenciones();
+            cargarMesas();
+            cargarMozos();
+            limpiarCampos();
+
+        } else {
+            mostrarMensaje(
+                    "Aviso",
+                    "No se pudo iniciar la atencion."
             );
         }
     }
@@ -358,26 +371,27 @@ public class FrmAtencionMesa extends Application {
                 return;
             }
 
-            int id =
-                    Integer.parseInt(
-                            txtId.getText()
-                    );
+            Mesa mesaSeleccionada = cboMesa.getValue();
+            Mozo mozoSeleccionado = cboMozo.getValue();
 
-            int mesaId =
-                    Integer.parseInt(
-                            txtMesaId.getText()
-                    );
+            if (mesaSeleccionada == null || mozoSeleccionado == null) {
 
-            int mozoId =
-                    Integer.parseInt(
-                            txtMozoId.getText()
-                    );
+                mostrarMensaje(
+                        "Aviso",
+                        "Selecciona una mesa y mozo."
+                );
 
-            boolean resultado =
-                    atencionService.actualizarAtencion(
+                return;
+
+            }
+
+            int id = Integer.parseInt(txtId.getText());
+
+            boolean resultado
+                    = atencionService.actualizarAtencion(
                             id,
-                            mesaId,
-                            mozoId
+                            mesaSeleccionada.getId(),
+                            mozoSeleccionado.getId()
                     );
 
             if (resultado) {
@@ -419,13 +433,13 @@ public class FrmAtencionMesa extends Application {
             return;
         }
 
-        int id =
-                Integer.parseInt(
+        int id
+                = Integer.parseInt(
                         txtId.getText()
                 );
 
-        boolean resultado =
-                atencionService.finalizarAtencion(id);
+        boolean resultado
+                = atencionService.finalizarAtencion(id);
 
         if (resultado) {
 
@@ -458,13 +472,13 @@ public class FrmAtencionMesa extends Application {
             return;
         }
 
-        int id =
-                Integer.parseInt(
+        int id
+                = Integer.parseInt(
                         txtId.getText()
                 );
 
-        boolean resultado =
-                atencionService.eliminarAtencion(id);
+        boolean resultado
+                = atencionService.eliminarAtencion(id);
 
         if (resultado) {
 
@@ -487,24 +501,29 @@ public class FrmAtencionMesa extends Application {
 
     private void limpiarCampos() {
 
-        txtId.clear();
-        txtMesaId.clear();
-        txtMozoId.clear();
-        txtEstado.clear();
-        txtFechaInicio.clear();
-        txtFechaFin.clear();
+    txtId.clear();
 
-        tablaAtenciones
-                .getSelectionModel()
-                .clearSelection();
-    }
+    cboMesa.getSelectionModel()
+            .clearSelection();
+
+    cboMozo.getSelectionModel()
+            .clearSelection();
+
+    txtEstado.clear();
+    txtFechaInicio.clear();
+    txtFechaFin.clear();
+
+    tablaAtenciones
+            .getSelectionModel()
+            .clearSelection();
+}
 
     private void mostrarMensaje(
             String titulo,
             String mensaje) {
 
-        Alert alerta =
-                new Alert(
+        Alert alerta
+                = new Alert(
                         Alert.AlertType.INFORMATION
                 );
 
@@ -517,5 +536,45 @@ public class FrmAtencionMesa extends Application {
 
     public static void main(String[] args) {
         launch(args);
+    }
+
+    private void seleccionarMesa(int mesaId) {
+        for (Mesa mesa : cboMesa.getItems()) {
+
+        if (mesa.getId() == mesaId) {
+
+            cboMesa.setValue(mesa);
+            break;
+        }
+    }
+    }
+
+    private void seleccionarMozo(int mozoId) {
+        for (Mozo mozo : cboMozo.getItems()) {
+
+        if (mozo.getId() == mozoId) {
+
+            cboMozo.setValue(mozo);
+            break;
+        }
+    }
+    }
+
+    private void cargarMesas() {
+        ObservableList<Mesa> listaMesas =
+            FXCollections.observableArrayList(
+                    atencionService.listarMesas()
+            );
+
+    cboMesa.setItems(listaMesas);
+    }
+
+    private void cargarMozos() {
+        ObservableList<Mozo> listaMozos =
+            FXCollections.observableArrayList(
+                    mozoDAO.listar()
+            );
+
+    cboMozo.setItems(listaMozos);
     }
 }
