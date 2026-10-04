@@ -46,7 +46,8 @@
             <version>0.0.8</version>
             <configuration>
                 <!-- Clase principal de tu aplicación -->
-                <mainClass>vista.FrmMesa</mainClass>
+                <!-- <mainClass>vista.FrmMesa</mainClass> -->
+                <mainClass>vista.FrmAtencionMesa</mainClass>
             </configuration>
         </plugin>
     </plugins>
