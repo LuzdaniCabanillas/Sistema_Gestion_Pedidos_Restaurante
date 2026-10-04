@@ -217,6 +217,8 @@ public class FrmAtencionMesa extends Application {
 
         stage.setScene(scene);
         stage.show();
+        cargarMesas();
+        cargarMozos();
 
         cargarAtenciones();
 
@@ -344,9 +346,9 @@ public class FrmAtencionMesa extends Application {
                     "La atencion se inicio correctamente."
             );
 
-            cargarAtenciones();
             cargarMesas();
             cargarMozos();
+            cargarAtenciones();
             limpiarCampos();
 
         } else {
