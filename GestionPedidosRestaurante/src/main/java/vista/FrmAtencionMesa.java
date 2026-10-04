@@ -541,6 +541,9 @@ public class FrmAtencionMesa extends Application {
     }
 
     private void seleccionarMesa(int mesaId) {
+        
+        Mesa mesaEcontrada = null;
+        
         for (Mesa mesa : cboMesa.getItems()) {
 
         if (mesa.getId() == mesaId) {
@@ -549,6 +552,19 @@ public class FrmAtencionMesa extends Application {
             break;
         }
     }
+        
+        if(mesaEcontrada == null){
+            Mesa mesa = atencionService.buscarMesa(mesaId);
+            if(mesa !=null){
+                mesaEcontrada = mesa;
+                cboMesa.getItems().add(mesa);
+                
+            }
+        }
+        
+        if(mesaEcontrada != null){
+            cboMesa.setValue(mesaEcontrada);
+        }
     }
 
     private void seleccionarMozo(int mozoId) {
@@ -564,9 +580,15 @@ public class FrmAtencionMesa extends Application {
 
     private void cargarMesas() {
         ObservableList<Mesa> listaMesas =
-            FXCollections.observableArrayList(
-                    atencionService.listarMesas()
-            );
+            FXCollections.observableArrayList();
+                    
+            for(Mesa mesa : atencionService.listarMesas()){
+                if(mesa.estaDisponible()){
+                    listaMesas.add(mesa);
+                }
+            }
+            
+            cboMesa.setItems(listaMesas);
 
     cboMesa.setItems(listaMesas);
     }

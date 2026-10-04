@@ -38,6 +38,6 @@ public class Mozo extends Empleado {
 
     @Override
     public String toString() {
-        return id + " - " + nombre;
+        return nombre;
     }
 }

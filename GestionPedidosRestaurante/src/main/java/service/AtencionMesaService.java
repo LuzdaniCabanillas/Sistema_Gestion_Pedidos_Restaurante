@@ -222,4 +222,8 @@ public class AtencionMesaService {
     public List<Mesa> listarMesas() {
         return mesaDAO.listar();
     }
+
+    public Mesa buscarMesa(int mesaId) {
+       return mesaDAO.buscarPorId(mesaId);
+    }
 }
