@@ -17,4 +17,36 @@ public class Mesa {
 
 	}
 
+	public int getId() {
+		return 0;
+	}
+
+	public void setId(int mesaId) {
+	}
+
+	public int getNumero() {
+		return numero;
+	}
+
+	public int getCapacidad() {
+		return capacidad;
+	}
+
+	public void setNumero(int numero) {
+		this.numero = numero;
+	}
+
+
+
+	public void setCapacidad(int capacidad) {
+		this.capacidad = capacidad;
+	}
+
+	public String getEstado() {
+		return estado;
+	}
+
+	public void setEstado(String estado) {
+		this.estado = estado;
+	}
 }
