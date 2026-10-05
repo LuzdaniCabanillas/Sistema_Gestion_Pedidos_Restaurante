@@ -4,6 +4,9 @@
 
 package restaurante;
 
+import modelo.Mozo;
+import modelo.Pedido;
+
 /**
  *
  * @author Luz

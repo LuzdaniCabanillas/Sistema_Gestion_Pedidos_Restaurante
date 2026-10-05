@@ -1,6 +1,8 @@
 
 package restaurante;
 
+import modelo.Plato;
+
 public class Home {
     
     private Plato plato;

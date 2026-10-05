@@ -12,7 +12,7 @@
     </properties>
     
     <dependencies>
-        <!-- Dependencia para MySQL Connector/J -->
+        <!-- Dependencia para utilitarios Connector/J -->
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>

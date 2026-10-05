@@ -1,5 +1,5 @@
 
-package MySQL;
+package utilitarios;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
