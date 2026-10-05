@@ -11,6 +11,7 @@ dataSources.local.xml
 *.iws
 *.ipr
 out/
+target/
 
 # Archivos del Sistema Operativo
 .DS_Store
