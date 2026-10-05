@@ -1,5 +1,5 @@
 
-package restaurante;
+package modelo;
 public class MetodoPago {
 
 }

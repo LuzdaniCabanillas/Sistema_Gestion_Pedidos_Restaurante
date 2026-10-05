@@ -1,5 +1,6 @@
 
-package restaurante;
+package modelo;
+
 public class Pago {
 
 	private int id;

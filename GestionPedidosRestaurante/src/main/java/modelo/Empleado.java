@@ -1,4 +1,4 @@
-package restaurante;
+package modelo;
 public abstract class Empleado {
 
 	private int id;
