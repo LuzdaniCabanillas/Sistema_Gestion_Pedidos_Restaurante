@@ -1,32 +1,43 @@
-
 package modelo;
 
 import modelo.Empleado;
 
 public class Mozo extends Empleado {
 
-	private Pedido pedido;
+    private Pedido pedido;
 
-	private Empleado empleado;
+    private Empleado empleado;
 
-	public void tomarPedido() {
+    public Mozo() {
+        super();
+    }
 
-	}
+    public Mozo(int id, String nombre, String dni, String turno) {
+        super(id, nombre, dni, turno);
+    }
 
-	public void egregarPlato() {
+    public void tomarPedido() {
 
-	}
+    }
 
-	public void enviarACocina() {
+    public void egregarPlato() {
 
-	}
+    }
 
-	public void entregarPedido() {
+    public void enviarACocina() {
 
-	}
+    }
 
-	public void registrarPago() {
+    public void entregarPedido() {
 
-	}
+    }
 
+    public void registrarPago() {
+
+    }
+
+    @Override
+    public String toString() {
+        return nombre;
+    }
 }
