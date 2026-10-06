@@ -1,5 +1,7 @@
 package service;
 
+import controlador.MesaDAO;
+import controlador.MozoDAO;
 import controlador.PedidoDAO;
 
 import java.util.List;

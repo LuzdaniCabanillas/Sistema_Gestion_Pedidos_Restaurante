@@ -1,4 +1,4 @@
-workspace.xml
+.idea/workspace.xml
 /shelf/
 /httpRequests/
 /queries/
@@ -7,13 +7,19 @@ dataSources.local.xml
 
 # IntelliJ IDEA (configuracion)
 .idea/
+**/.idea/
 *.iml
 *.iws
 *.ipr
 out/
-target/
+**/target/
 
 # Archivos del Sistema Operativo
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# Ignorar DAOs porque son solo prueba
+**/controlador/MesaDAO.java
+**/controlador/MozoDAO.java
+**/controlador/PlatoDAO.java

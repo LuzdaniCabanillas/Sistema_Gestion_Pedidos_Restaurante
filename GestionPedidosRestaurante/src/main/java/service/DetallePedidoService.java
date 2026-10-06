@@ -5,6 +5,7 @@ import controlador.PedidoDAO;
 
 import java.util.List;
 
+import controlador.PlatoDAO;
 import modelo.DetallePedido;
 import modelo.EstadoPedido;
 import modelo.Pedido;
