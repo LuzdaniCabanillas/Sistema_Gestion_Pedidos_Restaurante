@@ -1,57 +1,95 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
+
     <groupId>sistema</groupId>
     <artifactId>GestionPedidosRestaurante</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
+
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.release>21</maven.compiler.release>
-        <exec.mainClass>sistema.restaurante.GestionPedidosRestaurante</exec.mainClass>
+
+        <project.build.sourceEncoding>
+            UTF-8
+        </project.build.sourceEncoding>
+
+        <maven.compiler.release>
+            21
+        </maven.compiler.release>
+
+        <!-- AQUÍ ELIGES QUÉ FORMULARIO EJECUTAR -->
+        <exec.mainClass>
+            vista.FormCuenta
+        </exec.mainClass>
+
     </properties>
-    
+
+
     <dependencies>
-        <!-- Dependencia para MySQL Connector/J -->
-        
-       <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
+
+        <!-- MySQL -->
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
             <version>8.0.33</version>
-            <scope>compile</scope>
         </dependency>
 
-       <!-- JavaFX Controls -->
-    <dependency>
-        <groupId>org.openjfx</groupId>
-        <artifactId>javafx-controls</artifactId>
-        <version>21.0.6</version>
-    </dependency>
 
-    <!-- JavaFX FXML -->
-    <dependency>
-        <groupId>org.openjfx</groupId>
-        <artifactId>javafx-fxml</artifactId>
-        <version>21.0.6</version>
-    </dependency>
-        
-    </dependencies>
-    
-    <build>
-    <plugins>
-        <!-- Plugin para ejecutar aplicaciones JavaFX -->
-        <plugin>
+        <!-- JavaFX Controls -->
+        <dependency>
             <groupId>org.openjfx</groupId>
-            <artifactId>javafx-maven-plugin</artifactId>
-            <version>0.0.8</version>
-            <configuration>
-                <!-- Clase principal de tu aplicación -->
-                <!-- <mainClass>vista.FrmMesa</mainClass> -->
-                <mainClass>vista.FrmAtencionMesa</mainClass>
-            </configuration>
-        </plugin>
-    </plugins>
+            <artifactId>javafx-controls</artifactId>
+            <version>21.0.6</version>
+        </dependency>
+
+
+        <!-- JavaFX FXML -->
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-fxml</artifactId>
+            <version>21.0.6</version>
+        </dependency>
+
+    </dependencies>
+
+
+    <build>
+
+        <plugins>
+
+            <!-- Plugin JavaFX -->
+            <plugin>
+
+                <groupId>
+                    org.openjfx
+                </groupId>
+
+                <artifactId>
+                    javafx-maven-plugin
+                </artifactId>
+
+                <version>
+                    0.0.8
+                </version>
+
+                <configuration>
+
+                    <!-- Toma la clase definida arriba -->
+                    <mainClass>
+                        ${exec.mainClass}
+                    </mainClass>
+
+                </configuration>
+
+            </plugin>
+
+        </plugins>
+
     </build>
 
-    
 </project>

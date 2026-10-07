@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 import modelo.EstadoPedido;
 import modelo.DetallePedido;
-import modelo.Cuenta;
+//import modelo.Cuenta;
 
 public class Pedido {
 
@@ -18,7 +18,7 @@ public class Pedido {
 
 	private Mesa mesa;
 
-	private Cuenta cuenta;
+	//private Cuenta cuenta;
 
 	private DetallePedido[] detallePedido;
 
