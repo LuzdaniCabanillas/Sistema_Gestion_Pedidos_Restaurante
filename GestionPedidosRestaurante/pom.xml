@@ -47,7 +47,7 @@
             <configuration>
                 <!-- Clase principal de tu aplicación -->
                 <!-- <mainClass>vista.FrmMesa</mainClass> -->
-                <mainClass>vista.FrmAtencionMesa</mainClass>
+                <mainClass>vista.FrmPlato</mainClass>
             </configuration>
         </plugin>
     </plugins>
