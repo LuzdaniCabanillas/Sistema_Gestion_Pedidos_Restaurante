@@ -206,6 +206,11 @@ public class FrmMesa extends Application {
         tablaMesas.setItems(lista);
     }
 
+    public void mostrar() {
+        Stage nuevaVentana = new Stage();
+        start(nuevaVentana);
+    }
+    
     public static void main(String[] args) {
         launch(args);
     }
