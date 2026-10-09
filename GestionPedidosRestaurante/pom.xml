@@ -13,11 +13,45 @@
     
     <dependencies>
         <!-- Dependencia para MySQL Connector/J -->
-        <dependency>
+        
+       <dependency>
             <groupId>mysql</groupId>
-            <artifactId>mysql-connector-j</artifactId>
-            <version>8.4.0</version>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.33</version>
+            <scope>compile</scope>
         </dependency>
+
+       <!-- JavaFX Controls -->
+    <dependency>
+        <groupId>org.openjfx</groupId>
+        <artifactId>javafx-controls</artifactId>
+        <version>21.0.6</version>
+    </dependency>
+
+    <!-- JavaFX FXML -->
+    <dependency>
+        <groupId>org.openjfx</groupId>
+        <artifactId>javafx-fxml</artifactId>
+        <version>21.0.6</version>
+    </dependency>
+        
     </dependencies>
+    
+    <build>
+    <plugins>
+        <!-- Plugin para ejecutar aplicaciones JavaFX -->
+        <plugin>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-maven-plugin</artifactId>
+            <version>0.0.8</version>
+            <configuration>
+                <!-- Clase principal de tu aplicación -->
+                <!-- <mainClass>vista.FrmMesa</mainClass> -->
+                <mainClass>vista.MainApp</mainClass>
+            </configuration>
+        </plugin>
+    </plugins>
+    </build>
+
     
 </project>
