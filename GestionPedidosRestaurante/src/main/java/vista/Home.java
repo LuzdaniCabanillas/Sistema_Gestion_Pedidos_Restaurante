@@ -261,9 +261,8 @@ public class Home {
         //modificado
         btnAgregar.setDisable(
                 pedidoActual == null
-                || !"PENDIENTE".equalsIgnoreCase(
-                        pedidoActual.getEstado()
-                )
+                || (!"PENDIENTE".equalsIgnoreCase(pedidoActual.getEstado())
+                && !"EN_PREPARACION".equalsIgnoreCase(pedidoActual.getEstado()))
         );
 
         btnAgregar.setOnAction(
@@ -520,11 +519,8 @@ public class Home {
             return;
         }
 
-        if (!"PENDIENTE".equalsIgnoreCase(
-                pedidoActual.getEstado())) {
-            mostrarError(
-                    "El pedido ya no está pendiente y no admite más platos."
-            );
+        if (!"PENDIENTE".equalsIgnoreCase(pedidoActual.getEstado()) && !"EN_PREPARACION".equalsIgnoreCase(pedidoActual.getEstado())) {
+            mostrarError("El pedido ya no admite más platos (Solo Pendiente o En Preparación).");
             return;
         }
 

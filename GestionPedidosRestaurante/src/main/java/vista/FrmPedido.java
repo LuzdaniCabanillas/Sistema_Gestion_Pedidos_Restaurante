@@ -30,7 +30,7 @@ import service.AtencionMesaService;
 import service.PedidoService;
 
 public class FrmPedido extends Application {
-    
+
     private TextField txtId;
     private TextField txtFecha;
     private TextField txtEstado;
@@ -419,17 +419,13 @@ public class FrmPedido extends Application {
     // ABRIR HOME
     //modificado
     private void abrirHome() {
-
         if (pedidoActual == null) {
             mostrarError("Primero debe iniciar un pedido.");
             return;
         }
 
-        if (!"PENDIENTE".equalsIgnoreCase(
-                pedidoActual.getEstado())) {
-            mostrarError(
-                    "Solo se pueden agregar platos a un pedido pendiente."
-            );
+        if (!"PENDIENTE".equalsIgnoreCase(pedidoActual.getEstado()) && !"EN_PREPARACION".equalsIgnoreCase(pedidoActual.getEstado())) {
+            mostrarError("Solo se pueden agregar platos a un pedido pendiente o en preparación.");
             return;
         }
 
@@ -585,11 +581,10 @@ public class FrmPedido extends Application {
             mostrarPedidoActual();
 
             //modificado
-            btnAgregarPlato.setDisable(true);
-            btnAgregarPlato.setVisible(false);
-            btnAgregarPlato.setManaged(false);
+            //btnAgregarPlato.setDisable(true);
+            //btnAgregarPlato.setVisible(false);
+            //btnAgregarPlato.setManaged(false);
             //>
-
             mostrarInformacion(
                     "Pedido enviado a cocina correctamente."
             );

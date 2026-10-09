@@ -12,6 +12,7 @@ public class Pedido {
     private double subTotal;
     private Mesa mesa;
     private Mozo mozo;
+    private boolean pendientesDeEnvio = false;
 
     private List<DetallePedido> detalles;
 
@@ -100,6 +101,14 @@ public class Pedido {
         calcularSubtotal();
     }
 
+    public boolean isPendientesDeEnvio() {
+        return pendientesDeEnvio;
+    }
+
+    public void setPendientesDeEnvio(boolean pendientesDeEnvio) {
+        this.pendientesDeEnvio = pendientesDeEnvio;
+    }
+
     public void agregarPlato(Plato plato) {
         for (DetallePedido detalle : detalles) {
             if (detalle.getPlato().getId() == plato.getId()) {
@@ -125,10 +134,11 @@ public class Pedido {
     }
 
     public void enviarACocina() {
-        if ("PENDIENTE".equals(this.estado)) {
-
+        if ("PENDIENTE".equals(this.estado) || "EN_PREPARACION".equals(this.estado)) {
             this.estado = "EN_PREPARACION";
+            this.pendientesDeEnvio = false;
         }
+
     }
 
     public void entregarPedido() {

@@ -79,11 +79,8 @@ public class PedidoService {
             );
         }
 
-        if (!"PENDIENTE".equalsIgnoreCase(
-                pedido.getEstado())) {
-            throw new IllegalStateException(
-                    "El pedido ya no está disponible para modificar."
-            );
+        if (!"PENDIENTE".equalsIgnoreCase(pedido.getEstado()) && !"EN_PREPARACION".equalsIgnoreCase(pedido.getEstado())) {
+            throw new IllegalStateException("El pedido ya no está disponible para modificar (Solo PENDIENTE o EN_PREPARACION).");
         }
 
         if (!"DISPONIBLE".equalsIgnoreCase(
@@ -92,6 +89,8 @@ public class PedidoService {
                     "El plato seleccionado no está disponible."
             );
         }
+
+        pedido.setPendientesDeEnvio(true);
 
         for (DetallePedido detalle : pedido.getDetalles()) {
 
@@ -130,6 +129,8 @@ public class PedidoService {
         pedido.getDetalles().add(detalle);
         pedido.calcularSubtotal();
 
+        pedido.setPendientesDeEnvio(true);
+
         if (pedido.getId() > 0) {
 
             pedidoDAO.actualizar(pedido);
@@ -141,11 +142,13 @@ public class PedidoService {
         if (pedido == null || detalle == null) {
             return;
         }
-        if (!"PENDIENTE".equals(pedido.getEstado())) {
-            throw new IllegalStateException("El pedido ya no puede ser modificado.");
+        if (!"PENDIENTE".equalsIgnoreCase(pedido.getEstado()) && !"EN_PREPARACION".equalsIgnoreCase(pedido.getEstado())) {
+            throw new IllegalStateException("El pedido ya no está disponible para modificar (Solo PENDIENTE o EN_PREPARACION).");
         }
         pedido.getDetalles().remove(detalle);
         pedido.calcularSubtotal();
+
+        pedido.setPendientesDeEnvio(true);
     }
 
     //Aumentar cantidad
@@ -153,12 +156,13 @@ public class PedidoService {
         if (pedido == null || detalle == null) {
             return;
         }
-        if (!"PENDIENTE".equals(pedido.getEstado())) {
-            throw new IllegalStateException("El pedido ya no puede ser modificado.");
+        if (!"PENDIENTE".equalsIgnoreCase(pedido.getEstado()) && !"EN_PREPARACION".equalsIgnoreCase(pedido.getEstado())) {
+            throw new IllegalStateException("El pedido ya no está disponible para modificar (Solo PENDIENTE o EN_PREPARACION).");
         }
         detalle.setCantidad(detalle.getCantidad() + 1);
         detalle.calcularSubtotal();
         pedido.calcularSubtotal();
+        pedido.setPendientesDeEnvio(true);
     }
 
     //Disminuir cantidad
@@ -166,8 +170,8 @@ public class PedidoService {
         if (pedido == null || detalle == null) {
             return;
         }
-        if (!"PENDIENTE".equals(pedido.getEstado())) {
-            throw new IllegalStateException("El pedido ya no puede ser modificado.");
+        if (!"PENDIENTE".equalsIgnoreCase(pedido.getEstado()) && !"EN_PREPARACION".equalsIgnoreCase(pedido.getEstado())) {
+            throw new IllegalStateException("El pedido ya no está disponible para modificar (Solo PENDIENTE o EN_PREPARACION).");
         }
         if (detalle.getCantidad() > 1) {
             detalle.setCantidad(detalle.getCantidad() - 1);
@@ -176,6 +180,7 @@ public class PedidoService {
         } else {
             pedido.getDetalles().remove(detalle);
             pedido.calcularSubtotal();
+            pedido.setPendientesDeEnvio(true);
         }
     }
 
@@ -225,9 +230,13 @@ public class PedidoService {
         if (pedido.getDetalles().isEmpty()) {
             throw new IllegalStateException("No se puede enviar un pedido sin platos.");
         }
-        if (!"PENDIENTE".equals(pedido.getEstado())) {
-            throw new IllegalStateException("El pedido no está pendiente.");
+        if (!"PENDIENTE".equalsIgnoreCase(pedido.getEstado()) && !"EN_PREPARACION".equalsIgnoreCase(pedido.getEstado())) {
+            throw new IllegalStateException("El pedido debe estar PENDIENTE o EN_PREPARACION para enviarse a cocina.");
         }
+        if (!pedido.isPendientesDeEnvio()) {
+            throw new IllegalStateException("No hay platos nuevos o modificaciones para enviar a cocina.");
+        }
+
         pedido.enviarACocina();
         pedidoDAO.actualizar(pedido);
     }
