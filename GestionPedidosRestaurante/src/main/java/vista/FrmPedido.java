@@ -565,12 +565,8 @@ public class FrmPedido extends Application {
 
         try {
 
-            if (pedidoActual.getId() == 0) {
-
-                mostrarError(
-                        "Primero debe guardar el pedido."
-                );
-
+            if (pedidoActual.getId() == 0 || pedidoActual.isCambiosSinGuardar()) {
+                mostrarError("Primero debe guardar el pedido.");
                 return;
             }
 

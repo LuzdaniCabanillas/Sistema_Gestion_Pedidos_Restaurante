@@ -60,6 +60,7 @@ public class PedidoService {
             detalle.setPedido(pedido);
             detallePedidoDAO.insertar(detalle);
         }
+        pedido.setCambiosSinGuardar(false);
         return idPedido;
     }
 
@@ -90,6 +91,7 @@ public class PedidoService {
             );
         }
 
+        pedido.setCambiosSinGuardar(true);
         pedido.setPendientesDeEnvio(true);
 
         for (DetallePedido detalle : pedido.getDetalles()) {
@@ -148,6 +150,7 @@ public class PedidoService {
         pedido.getDetalles().remove(detalle);
         pedido.calcularSubtotal();
 
+        pedido.setCambiosSinGuardar(false);
         pedido.setPendientesDeEnvio(true);
     }
 
@@ -162,6 +165,7 @@ public class PedidoService {
         detalle.setCantidad(detalle.getCantidad() + 1);
         detalle.calcularSubtotal();
         pedido.calcularSubtotal();
+        pedido.setCambiosSinGuardar(false);
         pedido.setPendientesDeEnvio(true);
     }
 
@@ -212,6 +216,7 @@ public class PedidoService {
         }
         pedido.calcularSubtotal();
         pedidoDAO.actualizar(pedido);
+        pedido.setCambiosSinGuardar(false);
     }
 
     //Eliminar Pedido

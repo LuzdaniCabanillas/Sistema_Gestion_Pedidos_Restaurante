@@ -13,6 +13,7 @@ public class Pedido {
     private Mesa mesa;
     private Mozo mozo;
     private boolean pendientesDeEnvio = false;
+    private boolean cambiosSinGuardar = false;
 
     private List<DetallePedido> detalles;
 
@@ -107,6 +108,14 @@ public class Pedido {
 
     public void setPendientesDeEnvio(boolean pendientesDeEnvio) {
         this.pendientesDeEnvio = pendientesDeEnvio;
+    }
+
+    public boolean isCambiosSinGuardar() {
+        return cambiosSinGuardar;
+    }
+
+    public void setCambiosSinGuardar(boolean cambiosSinGuardar) {
+        this.cambiosSinGuardar = cambiosSinGuardar;
     }
 
     public void agregarPlato(Plato plato) {
