@@ -2,7 +2,7 @@ package modelo;
 
 public class DetallePedido {
 
-	private int id;
+    private int id;
     private int cantidad;
     private double precioUnitario;
     private double subTotal;
