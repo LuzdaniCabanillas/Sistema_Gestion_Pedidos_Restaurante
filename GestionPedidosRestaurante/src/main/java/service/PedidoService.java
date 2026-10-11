@@ -1,10 +1,12 @@
 package service;
 
+import controlador.CuentaDAO;
 import controlador.DetallePedidoDAO;
 import controlador.PedidoDAO;
 import controlador.PlatoDAO;
 import java.sql.SQLException;
 import java.util.List;
+import modelo.Cuenta;
 import modelo.DetallePedido;
 import modelo.Mesa;
 import modelo.Mozo;
@@ -17,11 +19,16 @@ public class PedidoService {
     private final DetallePedidoDAO detallePedidoDAO;
     private final PlatoDAO platoDAO;
     private final AtencionMesaService atencionMesaService = null;
+    private final CuentaDAO cuentaDAO;
+    private final CuentaService cuentaService;
 
     public PedidoService() {
         pedidoDAO = new PedidoDAO();
         detallePedidoDAO = new DetallePedidoDAO();
         platoDAO = new PlatoDAO();
+
+        cuentaDAO = new CuentaDAO();
+        cuentaService = new CuentaService();
     }
 
     //Crear
@@ -64,7 +71,7 @@ public class PedidoService {
         return idPedido;
     }
 
-    //Agregar plato a pedido
+    // Agregar un plato a un pedido.
     public void agregarPlato(Pedido pedido, Plato plato)
             throws SQLException {
 
@@ -80,68 +87,129 @@ public class PedidoService {
             );
         }
 
-        if (!"PENDIENTE".equalsIgnoreCase(pedido.getEstado()) && !"EN_PREPARACION".equalsIgnoreCase(pedido.getEstado())) {
-            throw new IllegalStateException("El pedido ya no está disponible para modificar (Solo PENDIENTE o EN_PREPARACION).");
-        }
-
-        if (!"DISPONIBLE".equalsIgnoreCase(
-                plato.getEstado())) {
+        if (!"DISPONIBLE".equalsIgnoreCase(plato.getEstado())) {
             throw new IllegalStateException(
                     "El plato seleccionado no está disponible."
             );
         }
 
-        pedido.setCambiosSinGuardar(true);
-        pedido.setPendientesDeEnvio(true);
+        boolean pedidoEntregado
+                = "ENTREGADO".equalsIgnoreCase(pedido.getEstado());
 
-        for (DetallePedido detalle : pedido.getDetalles()) {
+        // Si el pedido ya fue entregado, comprobar la cuenta.
+        if (pedidoEntregado) {
 
-            if (detalle.getPlato().getId() == plato.getId()) {
+            if (pedido.getId() <= 0) {
+                throw new IllegalStateException(
+                        "El pedido entregado no tiene un ID válido."
+                );
+            }
 
-                detalle.setCantidad(
-                        detalle.getCantidad() + 1
+            Cuenta cuenta = cuentaDAO.buscarPorPedidoId(
+                    pedido.getId()
+            );
+
+            if (cuenta == null) {
+                throw new IllegalStateException(
+                        "El pedido ya fue entregado, pero todavía no "
+                                + "tiene una cuenta. Genere la cuenta antes "
+                                + "de agregar más platos."
+                );
+            }
+
+            if (!"PENDIENTE".equalsIgnoreCase(cuenta.getEstado())) {
+                throw new IllegalStateException(
+                        "La cuenta ya fue pagada. Debe crear un "
+                                + "nuevo pedido para agregar más platos."
+                );
+            }
+        } else if (!"PENDIENTE".equalsIgnoreCase(pedido.getEstado())
+                && !"EN_PREPARACION".equalsIgnoreCase(pedido.getEstado())) {
+            throw new IllegalStateException(
+                    "El pedido no está disponible para modificaciones."
+            );
+        }
+
+        // Solo incrementar un detalle que todavía está pendiente.
+        // Nunca modificar cantidades de platos ya entregados
+        // ni de platos que ya están en preparación.
+        if (!pedidoEntregado) {
+            for (DetallePedido detalle : pedido.getDetalles()) {
+
+                boolean mismoPlato
+                        = detalle.getPlato() != null
+                        && detalle.getPlato().getId() == plato.getId();
+
+                boolean detallePendiente
+                        = "PENDIENTE".equalsIgnoreCase(
+                        detalle.getEstado()
                 );
 
-                detalle.calcularSubtotal();
-                pedido.calcularSubtotal();
+                if (mismoPlato && detallePendiente) {
 
-                if (pedido.getId() > 0 && detalle.getId() > 0) {
+                    detalle.setCantidad(
+                            detalle.getCantidad() + 1
+                    );
 
-                    detallePedidoDAO.actualizar(detalle);
-                    pedidoDAO.actualizar(pedido);
+                    detalle.calcularSubtotal();
+                    pedido.calcularSubtotal();
+
+                    if (pedido.getId() > 0 && detalle.getId() > 0) {
+                        detallePedidoDAO.actualizar(detalle);
+                        pedidoDAO.actualizar(pedido);
+                    }
+
+                    pedido.setCambiosSinGuardar(false);
+                    pedido.setPendientesDeEnvio(true);
+                    return;
                 }
-
-                return;
             }
         }
 
-        DetallePedido detalle = new DetallePedido();
+        // Crear un nuevo detalle para el plato adicional.
+        DetallePedido nuevoDetalle = new DetallePedido();
 
-        detalle.setCantidad(1);
-        detalle.setPrecioUnitario(plato.getPrecio());
-        detalle.setPlato(plato);
-        detalle.setPedido(pedido);
-        detalle.calcularSubtotal();
+        nuevoDetalle.setCantidad(1);
+        nuevoDetalle.setPrecioUnitario(plato.getPrecio());
+        nuevoDetalle.setPlato(plato);
+        nuevoDetalle.setPedido(pedido);
+        nuevoDetalle.setEstado("PENDIENTE");
+        nuevoDetalle.calcularSubtotal();
 
+        // Guardar primero el nuevo detalle si el pedido ya existe.
         if (pedido.getId() > 0) {
-
-            detallePedidoDAO.insertar(detalle);
+            detallePedidoDAO.insertar(nuevoDetalle);
         }
 
-        pedido.getDetalles().add(detalle);
+        pedido.getDetalles().add(nuevoDetalle);
         pedido.calcularSubtotal();
 
+        // Un pedido entregado vuelve a preparación cuando recibe
+        // un nuevo plato pendiente.
+        if (pedidoEntregado) {
+            pedido.setEstado("EN_PREPARACION");
+        }
+
+        pedido.setCambiosSinGuardar(false);
         pedido.setPendientesDeEnvio(true);
 
         if (pedido.getId() > 0) {
-
             pedidoDAO.actualizar(pedido);
+
+            // Actualizar la misma cuenta pendiente con los nuevos
+            // importes del pedido que ya se guardó en la BD.
+            if (pedidoEntregado) {
+                cuentaDAO.actualizarCuentaPendiente(
+                        pedido.getId()
+                );
+            }
         }
     }
 
+    //>
     // MODIFICAR CANTIDAD DE UN PLATO
     public void modificarCantidad(Pedido pedido, DetallePedido detalle,
-            int nuevaCantidad) throws SQLException {
+                                  int nuevaCantidad) throws SQLException {
 
         if (pedido == null || detalle == null) {
             throw new IllegalArgumentException("Seleccione un plato.");
@@ -273,18 +341,38 @@ public class PedidoService {
         if (pedido == null) {
             throw new IllegalArgumentException("El pedido no existe.");
         }
-        if (pedido.getDetalles().isEmpty()) {
-            throw new IllegalStateException("No se puede enviar un pedido sin platos.");
-        }
-        if (!"PENDIENTE".equalsIgnoreCase(pedido.getEstado()) && !"EN_PREPARACION".equalsIgnoreCase(pedido.getEstado())) {
-            throw new IllegalStateException("El pedido debe estar PENDIENTE o EN_PREPARACION para enviarse a cocina.");
-        }
-        if (!pedido.isPendientesDeEnvio()) {
-            throw new IllegalStateException("No hay platos nuevos o modificaciones para enviar a cocina.");
+
+        if (pedido.getDetalles() == null || pedido.getDetalles().isEmpty()) {
+            throw new IllegalStateException(
+                    "No se puede enviar un pedido sin platos."
+            );
         }
 
-        pedido.enviarACocina();
-        pedidoDAO.actualizar(pedido);
+        String estado = pedido.getEstado();
+
+        // Primer envío: PENDIENTE -> EN_PREPARACION.
+        if ("PENDIENTE".equalsIgnoreCase(estado)) {
+            pedido.enviarACocina();
+            pedidoDAO.actualizar(pedido);
+            return;
+        }
+
+        // Reenvío de cambios de un pedido que ya está en preparación.
+        if ("EN_PREPARACION".equalsIgnoreCase(estado)) {
+            if (!pedido.isPendientesDeEnvio()) {
+                throw new IllegalStateException(
+                        "No hay platos nuevos o modificaciones para enviar a cocina."
+                );
+            }
+
+            pedido.enviarACocina();
+            pedidoDAO.actualizar(pedido);
+            return;
+        }
+
+        throw new IllegalStateException(
+                "Solo se pueden enviar pedidos pendientes o con cambios por enviar."
+        );
     }
 
     //Entergar Pedido
@@ -292,10 +380,20 @@ public class PedidoService {
         if (pedido == null) {
             throw new IllegalArgumentException("El pedido no existe.");
         }
-        if (!"EN_PREPARACION".equals(pedido.getEstado())) {
-            throw new IllegalStateException("El pedido no está en preparación.");
+
+        if (!"EN_PREPARACION".equalsIgnoreCase(pedido.getEstado())) {
+            throw new IllegalStateException(
+                    "Solo se pueden entregar pedidos en preparación."
+            );
         }
-        pedido.entregarPedido();
+
+        if (!pedido.entregarPedido()) {
+            throw new IllegalStateException(
+                    "No se pudo registrar la entrega del pedido."
+            );
+        }
+
+        // Actualiza el estado; no elimina el pedido ni sus detalles.
         pedidoDAO.actualizar(pedido);
     }
 
@@ -311,6 +409,100 @@ public class PedidoService {
         pedidoDAO.actualizar(pedido);
     }
 
+    public void enviarPlatoACocina(DetallePedido detalle)
+            throws SQLException {
+
+        if (detalle == null) {
+            throw new IllegalArgumentException(
+                    "Debe seleccionar un plato."
+            );
+        }
+
+        if (!"PENDIENTE".equalsIgnoreCase(detalle.getEstado())) {
+            throw new IllegalStateException(
+                    "Solo se pueden enviar a cocina platos pendientes."
+            );
+        }
+
+        Pedido pedido = detalle.getPedido();
+
+        if (pedido == null) {
+            throw new IllegalStateException(
+                    "El plato no tiene un pedido asociado."
+            );
+        }
+
+        detalle.setEstado("EN_PREPARACION");
+        detallePedidoDAO.actualizarEstado(detalle);
+
+        // El pedido general pasa a preparación cuando se envía
+        // al menos uno de sus platos.
+        if ("PENDIENTE".equalsIgnoreCase(pedido.getEstado())) {
+            pedido.setEstado("EN_PREPARACION");
+            pedidoDAO.actualizar(pedido);
+        }
+    }
+
+    public void entregarPlato(DetallePedido detalle)
+            throws SQLException {
+
+        if (detalle == null) {
+            throw new IllegalArgumentException(
+                    "Debe seleccionar un plato."
+            );
+        }
+
+        Pedido pedido = detalle.getPedido();
+
+        if (pedido == null || pedido.getId() <= 0) {
+            throw new IllegalStateException(
+                    "El plato no tiene un pedido válido asociado."
+            );
+        }
+
+        if (!detalle.entregar()) {
+            throw new IllegalStateException(
+                    "Solo se pueden entregar platos en preparación."
+            );
+        }
+
+        // Guardar la entrega del detalle seleccionado.
+        detallePedidoDAO.actualizarEstado(detalle);
+
+        // Consultar todos los detalles actualizados desde MySQL.
+        List<DetallePedido> detalles
+                = detallePedidoDAO.listarPorPedido(pedido.getId());
+
+        boolean todosEntregados = !detalles.isEmpty();
+
+        for (DetallePedido otroDetalle : detalles) {
+            if (!"ENTREGADO".equalsIgnoreCase(
+                    otroDetalle.getEstado())) {
+
+                todosEntregados = false;
+                break;
+            }
+        }
+
+        if (todosEntregados) {
+
+            // Todos los platos se entregaron.
+            pedido.setEstado("ENTREGADO");
+            pedidoDAO.actualizar(pedido);
+
+            // Genera la cuenta automáticamente si no existe.
+            // Si ya hay una cuenta pendiente, actualiza sus importes.
+            cuentaService.generarCuenta(pedido.getId());
+
+        } else {
+
+            // Todavía quedan platos pendientes o en preparación.
+            pedido.setEstado("EN_PREPARACION");
+            pedidoDAO.actualizar(pedido);
+        }
+    }
+
+    //>
     //Buscar plato por Id
     public Plato buscarPlatoPorId(int id) throws SQLException {
         if (id <= 0) {
@@ -331,4 +523,5 @@ public class PedidoService {
     public List<Plato> mostrarCarta() throws SQLException {
         return platoDAO.listar();
     }
+
 }

@@ -8,6 +8,7 @@ public class DetallePedido {
     private double subTotal;
     private Plato plato;
     private Pedido pedido;
+    private String estado = "PENDIENTE";
 
     public DetallePedido() {
     }
@@ -75,6 +76,22 @@ public class DetallePedido {
 
     public void setPedido(Pedido pedido) {
         this.pedido = pedido;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+
+    public boolean entregar() {
+        if ("EN_PREPARACION".equalsIgnoreCase(estado)) {
+            estado = "ENTREGADO";
+            return true;
+        }
+        return false;
     }
 
     public void calcularSubtotal() {

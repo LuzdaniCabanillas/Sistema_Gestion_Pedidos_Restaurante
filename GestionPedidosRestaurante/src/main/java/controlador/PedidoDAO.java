@@ -111,5 +111,37 @@ public class PedidoDAO {
         pedido.setMozo(mozo);
         return pedido;
     }
+    public List<Pedido> listarEntregadosSinCuenta() throws SQLException {
+        List<Pedido> pedidosDisponibles = new ArrayList<>();
+
+        String sql = """
+        SELECT p.*
+        FROM Pedido p
+        LEFT JOIN Cuenta c ON c.pedido_id = p.id
+        WHERE UPPER(p.estado) = 'ENTREGADO'
+          AND c.id IS NULL
+        ORDER BY p.id DESC
+        """;
+
+        try (Connection con = ConexionMySQL.obtenerConexion(); PreparedStatement ps = con.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                Pedido pedido = new Pedido();
+                pedido.setId(rs.getInt("id"));
+
+                Timestamp fecha = rs.getTimestamp("fechaHora");
+                if (fecha != null) {
+                    pedido.setFechaHora(fecha.toLocalDateTime());
+                }
+
+                pedido.setEstado(rs.getString("estado"));
+                pedido.setSubTotal(rs.getDouble("subTotal"));
+
+                pedidosDisponibles.add(pedido);
+            }
+        }
+
+        return pedidosDisponibles;
+    }
 
 }
