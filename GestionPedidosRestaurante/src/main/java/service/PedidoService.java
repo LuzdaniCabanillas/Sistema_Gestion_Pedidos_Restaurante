@@ -139,16 +139,76 @@ public class PedidoService {
         }
     }
 
-    //Quitar plato de pedido
-    public void quitarPlato(Pedido pedido, DetallePedido detalle) {
+    // MODIFICAR CANTIDAD DE UN PLATO
+    public void modificarCantidad(Pedido pedido, DetallePedido detalle,
+            int nuevaCantidad) throws SQLException {
+
         if (pedido == null || detalle == null) {
-            return;
+            throw new IllegalArgumentException("Seleccione un plato.");
         }
-        if (!"PENDIENTE".equalsIgnoreCase(pedido.getEstado()) && !"EN_PREPARACION".equalsIgnoreCase(pedido.getEstado())) {
-            throw new IllegalStateException("El pedido ya no está disponible para modificar (Solo PENDIENTE o EN_PREPARACION).");
+
+        if (nuevaCantidad < 1) {
+            throw new IllegalArgumentException(
+                    "La cantidad debe ser mayor que cero.");
         }
-        pedido.getDetalles().remove(detalle);
+
+        if (!"PENDIENTE".equalsIgnoreCase(pedido.getEstado())
+                && !"EN_PREPARACION".equalsIgnoreCase(pedido.getEstado())) {
+            throw new IllegalStateException(
+                    "El pedido ya no se puede modificar.");
+        }
+
+        detalle.setCantidad(nuevaCantidad);
+        detalle.calcularSubtotal();
         pedido.calcularSubtotal();
+
+        // Si el detalle ya está guardado, actualizarlo en la BD.
+        if (pedido.getId() > 0 && detalle.getId() > 0) {
+            detallePedidoDAO.actualizar(detalle);
+            pedidoDAO.actualizar(pedido);
+        }
+
+        pedido.setCambiosSinGuardar(false);
+        pedido.setPendientesDeEnvio(true);
+    }
+
+    // QUITAR UN PLATO: DISMINUIR UNO O ELIMINAR EL ÚLTIMO
+    public void quitarPlato(Pedido pedido, DetallePedido detalle)
+            throws SQLException {
+
+        if (pedido == null || detalle == null) {
+            throw new IllegalArgumentException("Seleccione un plato.");
+        }
+
+        if (!"PENDIENTE".equalsIgnoreCase(pedido.getEstado())
+                && !"EN_PREPARACION".equalsIgnoreCase(pedido.getEstado())) {
+            throw new IllegalStateException(
+                    "El pedido ya no se puede modificar.");
+        }
+
+        if (detalle.getCantidad() > 1) {
+            // Ejemplo: de 2 platos pasa a 1.
+            detalle.setCantidad(detalle.getCantidad() - 1);
+            detalle.calcularSubtotal();
+
+            if (pedido.getId() > 0 && detalle.getId() > 0) {
+                detallePedidoDAO.actualizar(detalle);
+            }
+
+        } else {
+            // Si queda uno, quitar el detalle por completo.
+            if (pedido.getId() > 0 && detalle.getId() > 0) {
+                detallePedidoDAO.eliminar(detalle.getId());
+            }
+
+            pedido.getDetalles().remove(detalle);
+        }
+
+        pedido.calcularSubtotal();
+
+        if (pedido.getId() > 0) {
+            pedidoDAO.actualizar(pedido);
+        }
 
         pedido.setCambiosSinGuardar(false);
         pedido.setPendientesDeEnvio(true);
@@ -167,25 +227,6 @@ public class PedidoService {
         pedido.calcularSubtotal();
         pedido.setCambiosSinGuardar(false);
         pedido.setPendientesDeEnvio(true);
-    }
-
-    //Disminuir cantidad
-    public void disminuirCantidad(Pedido pedido, DetallePedido detalle) {
-        if (pedido == null || detalle == null) {
-            return;
-        }
-        if (!"PENDIENTE".equalsIgnoreCase(pedido.getEstado()) && !"EN_PREPARACION".equalsIgnoreCase(pedido.getEstado())) {
-            throw new IllegalStateException("El pedido ya no está disponible para modificar (Solo PENDIENTE o EN_PREPARACION).");
-        }
-        if (detalle.getCantidad() > 1) {
-            detalle.setCantidad(detalle.getCantidad() - 1);
-            detalle.calcularSubtotal();
-            pedido.calcularSubtotal();
-        } else {
-            pedido.getDetalles().remove(detalle);
-            pedido.calcularSubtotal();
-            pedido.setPendientesDeEnvio(true);
-        }
     }
 
     //Listar Pedidos

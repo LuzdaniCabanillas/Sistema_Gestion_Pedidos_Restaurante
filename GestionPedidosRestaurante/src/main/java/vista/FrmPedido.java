@@ -28,6 +28,7 @@ import modelo.Mozo;
 import modelo.Pedido;
 import service.AtencionMesaService;
 import service.PedidoService;
+import javafx.scene.control.TextInputDialog;
 
 public class FrmPedido extends Application {
 
@@ -49,8 +50,8 @@ public class FrmPedido extends Application {
     private Button btnNuevo;
     private Button btnAgregarPlato;
     private Button btnGuardar;
-    private Button btnActualizar;
-    private Button btnEliminar;
+    private Button btnModificarCantidad;
+    private Button btnQuitarPlato;
     private Button btnLimpiar;
     private Button btnEnviarCocina;
 
@@ -183,15 +184,17 @@ public class FrmPedido extends Application {
         // BOTONES
         btnNuevo = new Button("NUEVO");
         btnGuardar = new Button("GUARDAR");
-        btnActualizar = new Button("ACTUALIZAR");
-        btnEliminar = new Button("ELIMINAR");
+        btnModificarCantidad = new Button("MODIFICAR CANTIDAD");
+        btnQuitarPlato = new Button("QUITAR PLATO");
         btnLimpiar = new Button("LIMPIAR");
         btnEnviarCocina = new Button("ENVIAR A COCINA");
 
         btnNuevo.setOnAction(e -> nuevoPedido());
         btnGuardar.setOnAction(e -> guardarPedido());
-        btnActualizar.setOnAction(e -> actualizarPedido());
-        btnEliminar.setOnAction(e -> eliminarPedido());
+
+        btnModificarCantidad.setOnAction(e -> modificarCantidad());
+        btnQuitarPlato.setOnAction(e -> quitarPlato());
+
         btnLimpiar.setOnAction(e -> limpiarFormulario());
         btnEnviarCocina.setOnAction(e -> enviarACocina());
 
@@ -199,15 +202,15 @@ public class FrmPedido extends Application {
                 10,
                 btnNuevo,
                 btnGuardar,
-                btnActualizar,
-                btnEliminar,
+                btnModificarCantidad,
+                btnQuitarPlato,
                 btnLimpiar,
                 btnEnviarCocina
         );
 
         botones.setAlignment(Pos.CENTER);
         botones.setPadding(new Insets(15));
-
+        
         VBox centro = new VBox(
                 10,
                 datosPedido,
@@ -414,6 +417,70 @@ public class FrmPedido extends Application {
         listaDetalles.setAll(
                 pedidoActual.getDetalles()
         );
+    }
+    
+    // MODIFICAR CANTIDAD
+    private void modificarCantidad() {
+
+        DetallePedido detalle = tablaDetalles.getSelectionModel()
+                .getSelectedItem();
+
+        if (pedidoActual == null || detalle == null) {
+            mostrarError("Seleccione un plato de la tabla.");
+            return;
+        }
+
+        TextInputDialog dialog = new TextInputDialog(
+                String.valueOf(detalle.getCantidad()));
+
+        dialog.setTitle("Modificar cantidad");
+        dialog.setHeaderText("Plato: " + detalle.getPlato().getNombre());
+        dialog.setContentText("Ingrese la nueva cantidad:");
+
+        dialog.showAndWait().ifPresent(texto -> {
+            try {
+                int cantidad = Integer.parseInt(texto.trim());
+
+                pedidoService.modificarCantidad(
+                        pedidoActual, detalle, cantidad);
+
+                mostrarPedidoActual();
+
+            } catch (NumberFormatException ex) {
+                mostrarError("Ingrese una cantidad válida.");
+            } catch (Exception ex) {
+                mostrarError("No se pudo modificar la cantidad:\n"
+                        + ex.getMessage());
+            }
+        });
+    }
+
+    // QUITAR PLATO
+    private void quitarPlato() {
+
+        DetallePedido detalle = tablaDetalles.getSelectionModel()
+                .getSelectedItem();
+
+        if (pedidoActual == null || detalle == null) {
+            mostrarError("Seleccione un plato de la tabla.");
+            return;
+        }
+
+        try {
+            pedidoService.quitarPlato(pedidoActual, detalle);
+            mostrarPedidoActual();
+
+            mostrarInformacion(
+                    detalle.getCantidad() > 0
+                    && pedidoActual.getDetalles().contains(detalle)
+                    ? "Se redujo la cantidad del plato."
+                    : "Se quitó el último plato del detalle."
+            );
+
+        } catch (Exception ex) {
+            mostrarError("No se pudo quitar el plato:\n"
+                    + ex.getMessage());
+        }
     }
 
     // ABRIR HOME
