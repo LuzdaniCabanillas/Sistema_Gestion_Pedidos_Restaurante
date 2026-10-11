@@ -1,8 +1,5 @@
 package vista;
 
-/**
- * LEAN
- */
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.List;
@@ -13,7 +10,7 @@ import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
+//quitar -sergio
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -26,6 +23,15 @@ import javafx.scene.layout.VBox;
 import modelo.Cuenta;
 import service.CuentaService;
 
+// AGREGA -SERGIO
+import controlador.DetallePedidoDAO;
+import javafx.print.PrinterJob;
+import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.control.TextArea;
+import javafx.stage.Stage;
+import modelo.DetallePedido;
+
 public class FrmCuenta extends BorderPane {
 
     private final CuentaService cuentaService;
@@ -35,20 +41,19 @@ public class FrmCuenta extends BorderPane {
     private final TextField txtSubtotal;
     private final TextField txtIGV;
     private final TextField txtTotal;
+    private final DetallePedidoDAO detallePedidoDAO; //AGREGADO-SERGIO
 
-    private final ComboBox<String> cboMetodoPago;
-
+//quitar -sergio
     public FrmCuenta() {
         cuentaService = new CuentaService();
+        detallePedidoDAO = new DetallePedidoDAO(); //AGREGADO-SERGIO
 
         tablaCuentas = new TableView<>();
-
         txtSubtotal = new TextField();
         txtIGV = new TextField();
         txtTotal = new TextField();
 
-        cboMetodoPago = new ComboBox<>();
-
+        //quitar-sergio
         configurarFormulario();
         configurarTablas();
         cargarDatos();
@@ -89,30 +94,30 @@ public class FrmCuenta extends BorderPane {
         importes.add(new Label("Total:"), 0, 2);
         importes.add(txtTotal, 1, 2);
 
-        cboMetodoPago.setItems(
-                FXCollections.observableArrayList(
-                        "EFECTIVO", "TARJETA"
-                )
-        );
+        //quitar - sergio
+        Button btnVerDetalle = new Button("VER DETALLE");
+        Button btnImprimir = new Button("IMPRIMIR CUENTA");
+        Button btnRegistrarPago = new Button("REGISTRAR PAGO");
 
-        cboMetodoPago.setPromptText("Seleccione método");
+        btnVerDetalle.setOnAction(e -> verDetalleCuenta());
+        btnImprimir.setOnAction(e -> imprimirCuenta());
+        btnRegistrarPago.setOnAction(e -> abrirRegistroPago());
 
-        Button btnPagar = new Button("Registrar pago");
-        btnPagar.setOnAction(e -> registrarPago());
-
-        HBox panelPago = new HBox(
+        HBox panelAcciones = new HBox(
                 10,
-                new Label("Método de pago:"),
-                cboMetodoPago,
-                btnPagar
+                btnVerDetalle,
+                btnImprimir,
+                btnRegistrarPago
         );
 
+        panelAcciones.setPadding(new Insets(10));
+        
         VBox panelCuentas = new VBox(
                 10,
                 encabezadoCuentas,
                 tablaCuentas,
                 importes,
-                panelPago
+                panelAcciones
         );
 
         VBox contenido = new VBox(
@@ -239,56 +244,7 @@ public class FrmCuenta extends BorderPane {
         }
     }
 
-    private void registrarPago() {
-        Cuenta cuenta = tablaCuentas.getSelectionModel()
-                .getSelectedItem();
-
-        if (cuenta == null) {
-            mostrarAdvertencia(
-                    "Seleccione una cuenta."
-            );
-            return;
-        }
-
-        if (!"PENDIENTE".equalsIgnoreCase(
-                cuenta.getEstado())) {
-            mostrarAdvertencia(
-                    "Solo se puede pagar una cuenta pendiente."
-            );
-            return;
-        }
-
-        String metodo = cboMetodoPago.getValue();
-
-        if (metodo == null) {
-            mostrarAdvertencia(
-                    "Seleccione Efectivo o Tarjeta."
-            );
-            return;
-        }
-
-        try {
-            cuentaService.registrarPago(
-                    cuenta.getId(), metodo
-            );
-
-            mostrarInformacion(
-                    "El pago se registró correctamente."
-            );
-
-            cboMetodoPago.getSelectionModel().clearSelection();
-
-            cargarDatos();
-
-        } catch (SQLException | IllegalStateException
-                | IllegalArgumentException ex) {
-            mostrarError(
-                    "No se pudo registrar el pago: "
-                    + ex.getMessage()
-            );
-        }
-    }
-
+    //ELIMIAR -SERGIO
     private void mostrarImportes(Cuenta cuenta) {
         txtSubtotal.setText(
                 cuenta.getSubTotal().toPlainString()
@@ -341,4 +297,212 @@ public class FrmCuenta extends BorderPane {
         alerta.setContentText(mensaje);
         alerta.showAndWait();
     }
+
+    private void verDetalleCuenta() {
+    Cuenta cuenta = tablaCuentas.getSelectionModel()
+            .getSelectedItem();
+
+    if (cuenta == null) {
+        mostrarAdvertencia("Seleccione una cuenta para ver su detalle.");
+        return;
+    }
+
+    try {
+        List<DetallePedido> detalles =
+                detallePedidoDAO.listarPorPedido(cuenta.getPedidoId());
+
+        StringBuilder contenido = new StringBuilder();
+
+        contenido.append("DETALLE DE CUENTA\n");
+        contenido.append("==============================\n");
+        contenido.append("Cuenta: ").append(cuenta.getId()).append("\n");
+        contenido.append("Pedido: ").append(cuenta.getPedidoId()).append("\n");
+        contenido.append("Estado: ").append(cuenta.getEstado()).append("\n\n");
+
+        contenido.append(String.format(
+                "%-22s %5s %10s %10s%n",
+                "PLATO", "CANT.", "PRECIO", "IMPORTE"
+        ));
+
+        contenido.append("-----------------------------------------------\n");
+
+        for (DetallePedido detalle : detalles) {
+            String nombre = detalle.getPlato().getNombre();
+
+            contenido.append(String.format(
+                    "%-22s %5d %10.2f %10.2f%n",
+                    nombre.length() > 22
+                            ? nombre.substring(0, 22)
+                            : nombre,
+                    detalle.getCantidad(),
+                    detalle.getPrecioUnitario(),
+                    detalle.getSubTotal()
+            ));
+        }
+
+        contenido.append("\n");
+        contenido.append("Subtotal: S/ ")
+                .append(cuenta.getSubTotal()).append("\n");
+        contenido.append("IGV (18%): S/ ")
+                .append(cuenta.getIGV()).append("\n");
+        contenido.append("TOTAL: S/ ")
+                .append(cuenta.getTotal()).append("\n");
+
+        TextArea area = new TextArea(contenido.toString());
+        area.setEditable(false);
+        area.setWrapText(false);
+        area.setPrefColumnCount(65);
+        area.setPrefRowCount(20);
+
+        Alert dialogo = new Alert(Alert.AlertType.INFORMATION);
+        dialogo.setTitle("Detalle de cuenta");
+        dialogo.setHeaderText("Cuenta N.º " + cuenta.getId());
+        dialogo.getDialogPane().setContent(area);
+        dialogo.getDialogPane().setPrefWidth(650);
+        dialogo.showAndWait();
+
+    } catch (SQLException ex) {
+        mostrarError(
+                "No se pudo consultar el detalle de la cuenta: "
+                + ex.getMessage()
+        );
+    }
+}
+
+    private void imprimirCuenta() {
+    Cuenta cuenta = tablaCuentas.getSelectionModel()
+            .getSelectedItem();
+
+    if (cuenta == null) {
+        mostrarAdvertencia("Seleccione una cuenta para imprimir.");
+        return;
+    }
+
+    try {
+        List<DetallePedido> detalles =
+                detallePedidoDAO.listarPorPedido(cuenta.getPedidoId());
+
+        VBox ticket = new VBox(8);
+        ticket.setPadding(new Insets(20));
+        ticket.setPrefWidth(350);
+
+        ticket.getChildren().addAll(
+                new javafx.scene.control.Label(
+                        "SISTEMA DE GESTIÓN DE RESTAURANTE"
+                ),
+                new javafx.scene.control.Label(
+                        "COMPROBANTE DE CUENTA"
+                ),
+                new javafx.scene.control.Label(
+                        "Cuenta: " + cuenta.getId()
+                ),
+                new javafx.scene.control.Label(
+                        "Pedido: " + cuenta.getPedidoId()
+                ),
+                new javafx.scene.control.Label(
+                        "Estado: " + cuenta.getEstado()
+                ),
+                new javafx.scene.control.Label(
+                        "--------------------------------"
+                )
+        );
+
+        for (DetallePedido detalle : detalles) {
+            String linea = detalle.getPlato().getNombre()
+                    + " x " + detalle.getCantidad()
+                    + " = S/ "
+                    + String.format("%.2f", detalle.getSubTotal());
+
+            ticket.getChildren().add(
+                    new javafx.scene.control.Label(linea)
+            );
+        }
+
+        ticket.getChildren().addAll(
+                new javafx.scene.control.Label(
+                        "--------------------------------"
+                ),
+                new javafx.scene.control.Label(
+                        "Subtotal: S/ " + cuenta.getSubTotal()
+                ),
+                new javafx.scene.control.Label(
+                        "IGV: S/ " + cuenta.getIGV()
+                ),
+                new javafx.scene.control.Label(
+                        "TOTAL: S/ " + cuenta.getTotal()
+                ),
+                new javafx.scene.control.Label(
+                        "Documento informativo. No acredita pago."
+                )
+        );
+
+        PrinterJob trabajo = PrinterJob.createPrinterJob();
+
+        if (trabajo == null) {
+            mostrarError("No hay una impresora disponible.");
+            return;
+        }
+
+        Stage ventana = new Stage();
+
+        boolean aceptarImpresion =
+                trabajo.showPrintDialog(ventana);
+
+        if (aceptarImpresion) {
+            boolean impreso = trabajo.printPage(ticket);
+
+            if (impreso) {
+                trabajo.endJob();
+                mostrarInformacion(
+                        "Se envió la cuenta a la impresora."
+                );
+            } else {
+                trabajo.cancelJob();
+                mostrarError("No se pudo imprimir la cuenta.");
+            }
+        } else {
+            trabajo.cancelJob();
+        }
+
+    } catch (SQLException ex) {
+        mostrarError(
+                "No se pudo preparar la cuenta para imprimir: "
+                + ex.getMessage()
+        );
+    }
+}
+
+    // MODIFICADO-SEGIO
+    
+private void abrirRegistroPago() {
+    Cuenta cuentaSeleccionada =
+            tablaCuentas.getSelectionModel().getSelectedItem();
+
+    if (cuentaSeleccionada == null) {
+        mostrarAdvertencia(
+            "Selecciona una cuenta para registrar el pago."
+        );
+        return;
+    }
+
+    if (!"PENDIENTE".equalsIgnoreCase(
+            cuentaSeleccionada.getEstado())) {
+        mostrarAdvertencia(
+            "Solo puedes registrar el pago de una cuenta pendiente."
+        );
+        return;
+    }
+
+    FrmRegistroPago formulario =
+            new FrmRegistroPago(cuentaSeleccionada);
+
+    Stage ventana = new Stage();
+    ventana.setTitle("Registro de Pago");
+    ventana.setScene(new Scene(formulario, 620, 500));
+    ventana.showAndWait();
+
+    cargarDatos();
+}
+
+
 }
