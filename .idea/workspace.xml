@@ -5,22 +5,57 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1408cd96-0e24-4d8f-9693-18a24b745ca1" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/GestionPedidosRestaurante/src/main/java/controlador/CuentaDAO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/GestionPedidosRestaurante/src/main/java/service/CuentaService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/GestionPedidosRestaurante/src/main/java/vista/FrmCuenta.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/GestionPedidosRestaurante/src/main/java/vista/FrmSeguimientoPedidos.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/a100e876-e09b-49b3-bc34-8942b450a27d.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/a100e876-e09b-49b3-bc34-8942b450a27d.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/data_sources_history.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/data_sources_history.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/src/main/java/controlador/DetallePedidoDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/GestionPedidosRestaurante/src/main/java/controlador/DetallePedidoDAO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/src/main/java/controlador/PedidoDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/GestionPedidosRestaurante/src/main/java/controlador/PedidoDAO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/src/main/java/modelo/Cuenta.java" beforeDir="false" afterPath="$PROJECT_DIR$/GestionPedidosRestaurante/src/main/java/modelo/Cuenta.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/src/main/java/modelo/DetallePedido.java" beforeDir="false" afterPath="$PROJECT_DIR$/GestionPedidosRestaurante/src/main/java/modelo/DetallePedido.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/src/main/java/modelo/Mesa.java" beforeDir="false" afterPath="$PROJECT_DIR$/GestionPedidosRestaurante/src/main/java/modelo/Mesa.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/src/main/java/modelo/Pedido.java" beforeDir="false" afterPath="$PROJECT_DIR$/GestionPedidosRestaurante/src/main/java/modelo/Pedido.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/src/main/java/service/PedidoService.java" beforeDir="false" afterPath="$PROJECT_DIR$/GestionPedidosRestaurante/src/main/java/service/PedidoService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/src/main/java/vista/Home.java" beforeDir="false" afterPath="$PROJECT_DIR$/GestionPedidosRestaurante/src/main/java/vista/Home.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/Platos/chaufa_chancho.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/Platos/chaufa_chijaukay.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/Platos/chaufa_pollo.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/Platos/chaufa_pollo_enrollado.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/Platos/chaufa_pollo_pina.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/Platos/chaufa_pollo_tausi.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/Platos/combinado_pollo.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/Platos/lomo_saltado.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/Platos/tallarin_chancho_asado.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/Platos/tallarin_pollo_picado.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/Platos/tallarin_pollo_trozos.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/controlador/AtencionMesaDAO.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/controlador/CuentaDAO.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/controlador/DetallePedidoDAO.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/controlador/MesaDAO.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/controlador/MozoDAO.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/controlador/PedidoDAO.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/controlador/PlatoDAO.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/modelo/AtencionMesa.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/modelo/Cajero.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/modelo/Cuenta.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/modelo/DetallePedido.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/modelo/Empleado.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/modelo/EstadoCuenta.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/modelo/EstadoPedido.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/modelo/Home.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/modelo/Mesa.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/modelo/MetodoPago.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/modelo/Mozo.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/modelo/Pago.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/modelo/Pedido.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/modelo/Plato.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/restaurante/GestionPedidosRestaurante.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/service/AtencionMesaService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/service/CuentaService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/service/MesaService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/service/PedidoService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/service/PlatoService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/utilitarios/ConexionMySQL.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/vista/FrmAtencionMesa.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/vista/FrmCuenta.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/vista/FrmMesa.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/vista/FrmPedido.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/vista/FrmPlato.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/vista/FrmSeguimientoPedidos$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/vista/FrmSeguimientoPedidos.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/vista/Home$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/vista/Home.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/vista/MainApp.class" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
