@@ -53,7 +53,7 @@ public class Mesa {
 
         
 	public void ocupar() {
-            this.estado= "OCUPADO";
+            this.estado= "OCUPADA";
 
 	}
 

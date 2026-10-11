@@ -311,6 +311,7 @@ public class Home {
 
             Button btnInicio = new Button("Inicio / Carta");
             Button btnPedidos = new Button("Tomar pedido");
+            Button btnSeguimientoPedidos = new Button("Seguimiento de Pedidos");
             Button btnAtencion = new Button("Atención de mesas");
             Button btnMesas = new Button("Gestión de mesas");
             Button btnPlatos = new Button("Gestión de platos");
@@ -320,6 +321,7 @@ public class Home {
                     12,
                     btnInicio,
                     btnPedidos,
+                    btnSeguimientoPedidos,
                     btnAtencion,
                     btnMesas,
                     btnPlatos
@@ -343,6 +345,7 @@ public class Home {
 
             btnInicio.setOnAction(e -> mostrarCarta());
             btnPedidos.setOnAction(e -> new FrmPedido().mostrar());
+            btnSeguimientoPedidos.setOnAction(e -> new FrmSeguimientoPedidos().mostrar());
             btnAtencion.setOnAction(e -> new FrmAtencionMesa().mostrar());
             btnMesas.setOnAction(e -> new FrmMesa().mostrar());
             btnPlatos.setOnAction(e -> new FrmPlato().mostrar());

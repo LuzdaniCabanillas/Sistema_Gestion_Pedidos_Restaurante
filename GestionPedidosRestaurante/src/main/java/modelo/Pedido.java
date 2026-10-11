@@ -150,12 +150,13 @@ public class Pedido {
 
     }
 
-    public void entregarPedido() {
-        if ("EN_PREPARACION".equals(this.estado)) {
-
+    public boolean entregarPedido() {
+        if ("EN_PREPARACION".equalsIgnoreCase(this.estado)) {
             this.estado = "ENTREGADO";
+            return true;
         }
 
+        return false;
     }
 
     public void cerrarPedido() {
