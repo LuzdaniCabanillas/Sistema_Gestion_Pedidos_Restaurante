@@ -38,6 +38,7 @@ public class FrmPlato extends Application {
     private Button btnActualizar;
     private Button btnEliminar;
     private Button btnLimpiar;
+    private Button btnVolver;
 
     private TableView<Plato> tablaPlatos;
 
@@ -74,6 +75,13 @@ public class FrmPlato extends Application {
         btnActualizar = new Button("ACTUALIZAR");
         btnEliminar = new Button("ELIMINAR");
         btnLimpiar = new Button("LIMPIAR");
+        btnVolver = new Button("VOLVER");
+        btnVolver.setPrefWidth(100);
+        btnVolver.setPrefHeight(35);
+
+        btnVolver.setOnAction(e -> {
+            stage.close();
+        });
 
         GridPane formulario = new GridPane();
 
@@ -116,7 +124,8 @@ public class FrmPlato extends Application {
                 btnGuardar,
                 btnActualizar,
                 btnEliminar,
-                btnLimpiar
+                btnLimpiar,
+                btnVolver
         );
 
         tablaPlatos = new TableView<>();

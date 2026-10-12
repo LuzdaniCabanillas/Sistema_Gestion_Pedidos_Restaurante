@@ -41,7 +41,8 @@ public class FrmCuenta extends BorderPane {
     private final TextField txtSubtotal;
     private final TextField txtIGV;
     private final TextField txtTotal;
-    private final DetallePedidoDAO detallePedidoDAO; //AGREGADO-SERGIO
+    private final DetallePedidoDAO detallePedidoDAO;
+    
 
 //quitar -sergio
     public FrmCuenta() {

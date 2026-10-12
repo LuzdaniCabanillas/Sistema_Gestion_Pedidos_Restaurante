@@ -340,7 +340,7 @@ public class Home {
             menuLateral.setStyle("-fx-background-color: #eeeeee;");
 
             for (Button boton : new Button[]{
-                btnInicio, btnPedidos, btnAtencion, btnMesas, btnPlatos, btnCierrePedidos
+                btnInicio, btnPedidos, btnAtencion, btnSeguimientoPedidos, btnMesas, btnPlatos, btnCierrePedidos
             }) {
                 boton.setMaxWidth(Double.MAX_VALUE);
             }

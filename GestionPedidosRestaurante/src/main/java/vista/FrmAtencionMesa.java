@@ -45,6 +45,8 @@ public class FrmAtencionMesa extends Application {
     private Button btnFinalizar;
     private Button btnEliminar;
 
+    private Button btnVolver;
+    
     private TableView<AtencionMesa> tablaAtenciones;
 
     private AtencionMesaService atencionService;
@@ -125,6 +127,13 @@ public class FrmAtencionMesa extends Application {
         btnActualizar = new Button("ACTUALIZAR");
         btnFinalizar = new Button("FINALIZAR");
         btnEliminar = new Button("ELIMINAR");
+        btnVolver = new Button("VOLVER");
+        btnVolver.setPrefWidth(100);
+        btnVolver.setPrefHeight(35);
+
+        btnVolver.setOnAction(e -> {
+            stage.close();
+        });
 
         HBox botones = new HBox(10);
 
@@ -135,7 +144,8 @@ public class FrmAtencionMesa extends Application {
                 btnIniciar,
                 btnActualizar,
                 btnFinalizar,
-                btnEliminar
+                btnEliminar,
+                btnVolver
         );
 
         // Tabla

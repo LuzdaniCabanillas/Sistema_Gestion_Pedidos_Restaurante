@@ -34,6 +34,7 @@ public class FrmMesa extends Application {
     private Button btnActualizar;
     private Button btnEliminar;
     private Button btnLimpiar;
+    private Button btnVolver;
 
     private TableView<Mesa> tablaMesas;
 
@@ -93,7 +94,13 @@ public class FrmMesa extends Application {
         btnActualizar = new Button("ACTUALIZAR");
         btnEliminar = new Button("ELIMINAR");
         btnLimpiar = new Button("LIMPIAR");
+        btnVolver = new Button("VOLVER");
+        btnVolver.setPrefWidth(100);
+        btnVolver.setPrefHeight(35);
 
+        btnVolver.setOnAction(e -> {
+            stage.close();
+        });
         HBox botones = new HBox(10);
 
         botones.setAlignment(Pos.CENTER);
@@ -102,7 +109,8 @@ public class FrmMesa extends Application {
                 btnGuardar,
                 btnActualizar,
                 btnEliminar,
-                btnLimpiar
+                btnLimpiar,
+                btnVolver
         );
 
         tablaMesas = new TableView<>();

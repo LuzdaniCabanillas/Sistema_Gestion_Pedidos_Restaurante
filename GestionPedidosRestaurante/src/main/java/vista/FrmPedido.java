@@ -54,6 +54,7 @@ public class FrmPedido extends Application {
     private Button btnQuitarPlato;
     private Button btnLimpiar;
     private Button btnEnviarCocina;
+    private Button btnVolver;
 
     private Pedido pedidoActual;
 
@@ -187,8 +188,14 @@ public class FrmPedido extends Application {
         btnModificarCantidad = new Button("MODIFICAR CANTIDAD");
         btnQuitarPlato = new Button("QUITAR PLATO");
         btnLimpiar = new Button("LIMPIAR");
-        btnEnviarCocina = new Button("ENVIAR A COCINA");
+        
+        btnVolver = new Button("VOLVER");
+        btnVolver.setPrefWidth(100);
+        btnVolver.setPrefHeight(35);
 
+        btnVolver.setOnAction(e -> {
+            stage.close();
+        });
         btnNuevo.setOnAction(e -> nuevoPedido());
         btnGuardar.setOnAction(e -> guardarPedido());
 
@@ -205,12 +212,13 @@ public class FrmPedido extends Application {
                 btnModificarCantidad,
                 btnQuitarPlato,
                 btnLimpiar,
-                btnEnviarCocina
+                btnEnviarCocina,
+                btnVolver
         );
 
         botones.setAlignment(Pos.CENTER);
         botones.setPadding(new Insets(15));
-        
+
         VBox centro = new VBox(
                 10,
                 datosPedido,
@@ -418,7 +426,7 @@ public class FrmPedido extends Application {
                 pedidoActual.getDetalles()
         );
     }
-    
+
     // MODIFICAR CANTIDAD
     private void modificarCantidad() {
 
