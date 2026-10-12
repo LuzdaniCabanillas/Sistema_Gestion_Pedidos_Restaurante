@@ -17,16 +17,13 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.TableCell;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-
-//imagen:
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.control.TableCell;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -45,13 +42,21 @@ public class Home {
 
     private Button btnBuscarId;
     private Button btnBuscarNombre;
-    private Button btnMostrarCarta;
     private Button btnAgregar;
 
     private Label lblPedido;
 
     private final ObservableList<Plato> listaPlatos
             = FXCollections.observableArrayList();
+
+    // PALETA DE COLORES
+    private static final String VERDE_OSCURO = "#183D32";
+    private static final String VERDE = "#28785B";
+    private static final String VERDE_HOVER = "#35966F";
+    private static final String FONDO = "#F3F6F4";
+    private static final String TEXTO = "#24352D";
+    private static final String GRIS = "#64746B";
+    private static final String BLANCO = "#FFFFFF";
 
     public Home() {
         this(null);
@@ -70,121 +75,105 @@ public class Home {
         construirVentana(true);
     }
 
+    // =====================================================
+    // CONSTRUIR VENTANA PRINCIPAL
+    // =====================================================
     private void construirVentana(boolean esperarCierre) {
 
         stage = new Stage();
 
-        Label titulo = new Label("HOME - CARTA DEL RESTAURANTE");
-
+        // TÍTULO
+        Label titulo = new Label("CARTA DEL RESTAURANTE");
         titulo.setStyle(
-                "-fx-font-size: 24px;"
+                "-fx-font-size: 25px;"
+                + "-fx-font-weight: bold;"
+                + "-fx-text-fill: " + VERDE_OSCURO + ";"
+        );
+
+        Label subtitulo = new Label(
+                "Explora nuestros platos y encuentra tu favorito"
+        );
+        subtitulo.setStyle(
+                "-fx-font-size: 13px;"
+                + "-fx-text-fill: " + GRIS + ";"
+        );
+
+        // INFORMACIÓN DEL PEDIDO
+        lblPedido = new Label();
+        actualizarInformacionPedido();
+
+        lblPedido.setMaxWidth(Double.MAX_VALUE);
+        lblPedido.setPadding(new Insets(12));
+        lblPedido.setStyle(
+                "-fx-background-color: #E5F1E9;"
+                + "-fx-background-radius: 8;"
+                + "-fx-font-size: 13px;"
+                + "-fx-text-fill: " + VERDE_OSCURO + ";"
                 + "-fx-font-weight: bold;"
         );
 
-        lblPedido = new Label();
-
-        actualizarInformacionPedido();
-
+        // BUSCAR POR ID
         txtBuscarId = new TextField();
-        txtBuscarId.setPromptText("ID del plato");
-        txtBuscarId.setPrefWidth(150);
+        txtBuscarId.setPromptText("Ingrese el ID");
+        txtBuscarId.setPrefWidth(160);
+        estilizarCampo(txtBuscarId);
 
-        btnBuscarId = new Button("BUSCAR POR ID");
+        btnBuscarId = new Button("BUSCAR");
+        estilizarBoton(btnBuscarId, "primario");
+        btnBuscarId.setOnAction(e -> buscarPorId());
 
-        btnBuscarId.setOnAction(
-                e -> buscarPorId()
-        );
+        Label lblId = new Label("ID del plato");
+        estilizarEtiqueta(lblId);
 
         HBox buscarId = new HBox(
-                10,
-                new Label("ID:"),
-                txtBuscarId,
-                btnBuscarId
+                12, lblId, txtBuscarId, btnBuscarId
         );
-
         buscarId.setAlignment(Pos.CENTER_LEFT);
 
+        // BUSCAR POR NOMBRE
         txtBuscarNombre = new TextField();
-        txtBuscarNombre.setPromptText("Nombre del plato");
-        txtBuscarNombre.setPrefWidth(200);
+        txtBuscarNombre.setPromptText("Ej. Lomo Saltado");
+        txtBuscarNombre.setPrefWidth(220);
+        estilizarCampo(txtBuscarNombre);
 
-        btnBuscarNombre = new Button("BUSCAR POR NOMBRE");
+        btnBuscarNombre = new Button("BUSCAR");
+        estilizarBoton(btnBuscarNombre, "primario");
+        btnBuscarNombre.setOnAction(e -> buscarPorNombre());
 
-        btnBuscarNombre.setOnAction(
-                e -> buscarPorNombre()
-        );
+        Label lblNombre = new Label("Nombre del plato");
+        estilizarEtiqueta(lblNombre);
 
         HBox buscarNombre = new HBox(
-                10,
-                new Label("Nombre:"),
-                txtBuscarNombre,
-                btnBuscarNombre
+                12, lblNombre, txtBuscarNombre, btnBuscarNombre
         );
-
         buscarNombre.setAlignment(Pos.CENTER_LEFT);
 
-        btnMostrarCarta = new Button("MOSTRAR CARTA COMPLETA");
-
-        btnMostrarCarta.setOnAction(
-                e -> mostrarCarta()
+        // =================================================
+        // TABLA DE PLATOS
+        // =================================================
+        tablaPlatos = new TableView<>();
+        tablaPlatos.setItems(listaPlatos);
+        tablaPlatos.setColumnResizePolicy(
+                TableView.CONSTRAINED_RESIZE_POLICY
+        );
+        tablaPlatos.setPlaceholder(
+                new Label("No hay platos para mostrar.")
         );
 
-        tablaPlatos = new TableView<>();
+        tablaPlatos.setStyle(
+                "-fx-background-color: white;"
+                + "-fx-background-radius: 10;"
+                + "-fx-border-color: #DCE6DF;"
+                + "-fx-border-radius: 10;"
+                + "-fx-border-width: 1;"
+                + "-fx-font-size: 12px;"
+        );
 
         TableColumn<Plato, Integer> colId
                 = new TableColumn<>("ID");
 
-        //imagen<
         TableColumn<Plato, String> colImagen
                 = new TableColumn<>("Imagen");
-
-        colImagen.setCellValueFactory(
-                new PropertyValueFactory<>("imagen")
-        );
-
-        colImagen.setCellFactory(columna -> new TableCell<Plato, String>() {
-
-            private final ImageView vistaImagen = new ImageView();
-
-            @Override
-            protected void updateItem(String ruta, boolean vacio) {
-                super.updateItem(ruta, vacio);
-
-                if (vacio || ruta == null || ruta.isBlank()) {
-                    setGraphic(null);
-                    setText(null);
-                    return;
-                }
-
-                try {
-                    java.net.URL recurso = Home.class.getResource(ruta);
-
-                    if (recurso == null) {
-                        setGraphic(null);
-                        setText("Imagen no encontrada");
-                        return;
-                    }
-
-                    Image imagen = new Image(recurso.toExternalForm());
-
-                    vistaImagen.setImage(imagen);
-                    vistaImagen.setFitWidth(90);
-                    vistaImagen.setFitHeight(65);
-                    vistaImagen.setPreserveRatio(true);
-                    vistaImagen.setSmooth(true);
-
-                    setGraphic(vistaImagen);
-                    setText(null);
-
-                } catch (Exception ex) {
-                    setGraphic(null);
-                    setText("Error de imagen");
-                }
-            }
-        });
-
-        colImagen.setPrefWidth(120);
-        //imagen>
 
         TableColumn<Plato, String> colNombre
                 = new TableColumn<>("Nombre");
@@ -204,8 +193,13 @@ public class Home {
         TableColumn<Plato, Integer> colStock
                 = new TableColumn<>("Stock");
 
+        // VALORES DE LAS COLUMNAS
         colId.setCellValueFactory(
                 new PropertyValueFactory<>("id")
+        );
+
+        colImagen.setCellValueFactory(
+                new PropertyValueFactory<>("imagen")
         );
 
         colNombre.setCellValueFactory(
@@ -232,17 +226,66 @@ public class Home {
                 new PropertyValueFactory<>("stock")
         );
 
-        colId.setPrefWidth(60);
-        colNombre.setPrefWidth(170);
-        colDescripcion.setPrefWidth(220);
-        colPrecio.setPrefWidth(100);
-        colCategoria.setPrefWidth(120);
-        colEstado.setPrefWidth(120);
-        colStock.setPrefWidth(80);
+        // MOSTRAR IMÁGENES
+        colImagen.setCellFactory(columna
+                -> new TableCell<Plato, String>() {
+
+            private final ImageView vistaImagen = new ImageView();
+
+            @Override
+            protected void updateItem(String ruta, boolean vacio) {
+                super.updateItem(ruta, vacio);
+
+                if (vacio || ruta == null || ruta.isBlank()) {
+                    setGraphic(null);
+                    setText(null);
+                    return;
+                }
+
+                try {
+                    java.net.URL recurso
+                            = Home.class.getResource(ruta);
+
+                    if (recurso == null) {
+                        setGraphic(null);
+                        setText("Sin imagen");
+                        return;
+                    }
+
+                    Image imagen = new Image(
+                            recurso.toExternalForm()
+                    );
+
+                    vistaImagen.setImage(imagen);
+                    vistaImagen.setFitWidth(75);
+                    vistaImagen.setFitHeight(55);
+                    vistaImagen.setPreserveRatio(true);
+                    vistaImagen.setSmooth(true);
+
+                    setGraphic(vistaImagen);
+                    setText(null);
+                    setAlignment(Pos.CENTER);
+
+                } catch (Exception ex) {
+                    setGraphic(null);
+                    setText("Error de imagen");
+                }
+            }
+        });
+
+        // TAMAÑOS DE COLUMNAS
+        colId.setPrefWidth(50);
+        colImagen.setPrefWidth(95);
+        colNombre.setPrefWidth(145);
+        colDescripcion.setPrefWidth(200);
+        colPrecio.setPrefWidth(85);
+        colCategoria.setPrefWidth(110);
+        colEstado.setPrefWidth(100);
+        colStock.setPrefWidth(65);
 
         tablaPlatos.getColumns().addAll(
                 colId,
-                colImagen, //Imagen
+                colImagen,
                 colNombre,
                 colDescripcion,
                 colPrecio,
@@ -251,75 +294,104 @@ public class Home {
                 colStock
         );
 
-        tablaPlatos.setItems(listaPlatos);
+        // =================================================
+        // BOTÓN AGREGAR
+        // =================================================
+        btnAgregar = new Button("＋  AGREGAR AL PEDIDO");
+        btnAgregar.setPrefWidth(230);
+        btnAgregar.setPrefHeight(42);
 
-        btnAgregar = new Button("AGREGAR");
+        estilizarBoton(btnAgregar, "primario");
 
-        btnAgregar.setPrefWidth(150);
-        btnAgregar.setPrefHeight(35);
-
-        //modificado
         btnAgregar.setDisable(
                 pedidoActual == null
-                || (!"PENDIENTE".equalsIgnoreCase(pedidoActual.getEstado())
-                && !"EN_PREPARACION".equalsIgnoreCase(pedidoActual.getEstado()))
+                || (!"PENDIENTE".equalsIgnoreCase(
+                        pedidoActual.getEstado())
+                && !"EN_PREPARACION".equalsIgnoreCase(
+                        pedidoActual.getEstado()))
         );
 
         btnAgregar.setOnAction(
                 e -> agregarPlatoAlPedido()
         );
 
-        HBox panelAgregar = new HBox(
-                btnAgregar
+        HBox panelAgregar = new HBox(btnAgregar);
+        panelAgregar.setAlignment(Pos.CENTER);
+        panelAgregar.setPadding(new Insets(16));
+        panelAgregar.setStyle(
+                "-fx-background-color: " + BLANCO + ";"
+                + "-fx-border-color: #E1E9E3;"
+                + "-fx-border-width: 1 0 0 0;"
         );
 
-        panelAgregar.setAlignment(
-                Pos.CENTER
-        );
-
-        panelAgregar.setPadding(
-                new Insets(10)
-        );
-
-        HBox botonesCarta = new HBox(
-                10,
-                btnMostrarCarta
-        );
-
-        botonesCarta.setAlignment(
-                Pos.CENTER_LEFT
-        );
-
-        // PANEL SUPERIOR
+        // =================================================
+        // CABECERA
+        // =================================================
         VBox superior = new VBox(
-                10,
+                9,
                 titulo,
+                subtitulo,
                 lblPedido,
                 buscarId,
-                buscarNombre,
-                botonesCarta
+                buscarNombre
         );
 
-        superior.setPadding(
-                new Insets(15)
+        superior.setPadding(new Insets(22, 25, 18, 25));
+        superior.setStyle(
+                "-fx-background-color: " + BLANCO + ";"
+                + "-fx-border-color: #E1E9E3;"
+                + "-fx-border-width: 0 0 1 0;"
         );
 
-        // PANEL PRINCIPAL
+        // =================================================
+        // CONTENEDOR PRINCIPAL
+        // =================================================
         BorderPane root = new BorderPane();
+        root.setStyle(
+                "-fx-background-color: " + FONDO + ";"
+        );
 
+        // =================================================
+        // MENÚ LATERAL
+        // =================================================
         if (!esperarCierre) {
 
-            Button btnInicio = new Button("Carta");
-            Button btnPedidos = new Button("Tomar pedido");
-            Button btnSeguimientoPedidos = new Button("Seguimiento de Pedidos");
-            Button btnAtencion = new Button("Atención de mesas");
-            Button btnMesas = new Button("Gestión de mesas");
-            Button btnPlatos = new Button("Gestión de platos");
-            Button btnCierrePedidos = new Button("Cierre de pedidos");
+            Label marca = new Label("RESTAURANTE");
+            marca.setStyle(
+                    "-fx-font-size: 17px;"
+                    + "-fx-font-weight: bold;"
+                    + "-fx-text-fill: white;"
+            );
+
+            Label descripcionMarca = new Label("SISTEMA DE GESTIÓN");
+            descripcionMarca.setStyle(
+                    "-fx-font-size: 10px;"
+                    + "-fx-text-fill: #C7DED2;"
+            );
+
+            VBox encabezadoMenu = new VBox(
+                    5, marca, descripcionMarca
+            );
+            encabezadoMenu.setPadding(
+                    new Insets(8, 0, 20, 5)
+            );
+
+            Button btnInicio = new Button("⌂   Carta");
+            Button btnPedidos = new Button("＋   Tomar pedido");
+            Button btnSeguimientoPedidos
+                    = new Button("◷   Seguimiento de pedidos");
+            Button btnAtencion
+                    = new Button("▣   Atención de mesas");
+            Button btnMesas
+                    = new Button("▦   Gestión de mesas");
+            Button btnPlatos
+                    = new Button("☷   Gestión de platos");
+            Button btnCierrePedidos
+                    = new Button("✓   Cierre de pedidos");
             Button btnContraer = new Button("☰");
 
             VBox opcionesMenu = new VBox(
-                    12,
+                    7,
                     btnInicio,
                     btnPedidos,
                     btnSeguimientoPedidos,
@@ -329,52 +401,86 @@ public class Home {
                     btnCierrePedidos
             );
 
+            opcionesMenu.setFillWidth(true);
+            opcionesMenu.setSpacing(7);
+
             VBox menuLateral = new VBox(
                     12,
+                    encabezadoMenu,
                     btnContraer,
                     opcionesMenu
             );
 
-            menuLateral.setPadding(new Insets(15));
-            menuLateral.setPrefWidth(190);
-            menuLateral.setStyle("-fx-background-color: #eeeeee;");
+            menuLateral.setPadding(new Insets(14, 10, 14, 10));
+            menuLateral.setPrefWidth(245);
+            menuLateral.setMinWidth(245);
+            menuLateral.setMaxWidth(245);
+            menuLateral.setFillWidth(true);
+            menuLateral.setStyle(
+                    "-fx-background-color: " + VERDE_OSCURO + ";"
+            );
 
+            // ESTILO DE LOS BOTONES DEL MENÚ
             for (Button boton : new Button[]{
-                btnInicio, btnPedidos, btnAtencion, btnSeguimientoPedidos, btnMesas, btnPlatos, btnCierrePedidos
+                btnInicio,
+                btnPedidos,
+                btnSeguimientoPedidos,
+                btnAtencion,
+                btnMesas,
+                btnPlatos,
+                btnCierrePedidos
             }) {
                 boton.setMaxWidth(Double.MAX_VALUE);
+                boton.setAlignment(Pos.CENTER_LEFT);
+                boton.setPrefHeight(36);
+                boton.setMinHeight(36);
+                boton.setMaxHeight(36);
+                estilizarBoton(boton, "menu");
             }
 
+            btnContraer.setMaxWidth(Double.MAX_VALUE);
+            btnContraer.setPrefHeight(38);
+            estilizarBoton(btnContraer, "menu");
+
+            // ACCIONES ORIGINALES
             btnInicio.setOnAction(e -> mostrarCarta());
             btnPedidos.setOnAction(e -> new FrmPedido().mostrar());
-            btnSeguimientoPedidos.setOnAction(e -> new FrmSeguimientoPedidos().mostrar());
-            btnAtencion.setOnAction(e -> new FrmAtencionMesa().mostrar());
+            btnSeguimientoPedidos.setOnAction(
+                    e -> new FrmSeguimientoPedidos().mostrar()
+            );
+            btnAtencion.setOnAction(
+                    e -> new FrmAtencionMesa().mostrar()
+            );
             btnMesas.setOnAction(e -> new FrmMesa().mostrar());
             btnPlatos.setOnAction(e -> new FrmPlato().mostrar());
-            btnCierrePedidos.setOnAction(e -> new FrmCierrePedidos().mostrar());
+            btnCierrePedidos.setOnAction(
+                    e -> new FrmCierrePedidos().mostrar()
+            );
 
+            // CONTRAER / EXPANDIR MENÚ
             btnContraer.setOnAction(e -> {
                 boolean visible = opcionesMenu.isVisible();
 
                 opcionesMenu.setVisible(!visible);
                 opcionesMenu.setManaged(!visible);
+                encabezadoMenu.setVisible(!visible);
+                encabezadoMenu.setManaged(!visible);
 
                 if (visible) {
-                    menuLateral.setPrefWidth(55);
-                    menuLateral.setMinWidth(55);
-                    menuLateral.setMaxWidth(55);
+                    menuLateral.setPrefWidth(65);
+                    menuLateral.setMinWidth(65);
+                    menuLateral.setMaxWidth(65);
                     btnContraer.setText("☰");
                 } else {
-                    menuLateral.setPrefWidth(190);
-                    menuLateral.setMinWidth(190);
-                    menuLateral.setMaxWidth(190);
+                    menuLateral.setPrefWidth(245);
+                    menuLateral.setMinWidth(245);
+                    menuLateral.setMaxWidth(245);
                     btnContraer.setText("✕");
                 }
             });
 
             root.setLeft(menuLateral);
         }
-        //--
 
         root.setTop(superior);
         root.setCenter(tablaPlatos);
@@ -382,20 +488,17 @@ public class Home {
 
         BorderPane.setMargin(
                 tablaPlatos,
-                new Insets(15)
+                new Insets(20, 25, 20, 25)
         );
 
+        // =================================================
         // ESCENA
-        Scene scene = new Scene(
-                root,
-                1050,
-                650
-        );
+        // =================================================
+        Scene scene = new Scene(root, 1180, 720);
 
-        stage.setTitle(
-                "Home - Carta del Restaurante"
-        );
-
+        stage.setTitle("Restaurante | Carta y pedidos");
+        stage.setMinWidth(950);
+        stage.setMinHeight(620);
         stage.setScene(scene);
 
         mostrarCarta();
@@ -407,117 +510,187 @@ public class Home {
         }
     }
 
-    //carta
+    // =====================================================
+    // ESTILOS REUTILIZABLES
+    // =====================================================
+    private void estilizarBoton(Button boton, String tipo) {
+
+        String normal;
+        String hover;
+
+        switch (tipo) {
+            case "menu":
+                normal
+                        = "-fx-background-color: transparent;"
+                        + "-fx-text-fill: #E8F1EC;"
+                        + "-fx-font-size: 12px;"
+                        + "-fx-font-weight: bold;"
+                        + "-fx-background-radius: 7;"
+                        + "-fx-padding: 11 12 11 12;"
+                        + "-fx-cursor: hand;";
+
+                hover
+                        = "-fx-background-color: #2B5948;"
+                        + "-fx-text-fill: white;"
+                        + "-fx-font-size: 12px;"
+                        + "-fx-font-weight: bold;"
+                        + "-fx-background-radius: 7;"
+                        + "-fx-padding: 11 12 11 12;"
+                        + "-fx-cursor: hand;";
+                break;
+
+            case "secundario":
+                normal
+                        = "-fx-background-color: #E5F1E9;"
+                        + "-fx-text-fill: " + VERDE_OSCURO + ";"
+                        + "-fx-font-weight: bold;"
+                        + "-fx-background-radius: 7;"
+                        + "-fx-padding: 10 16 10 16;"
+                        + "-fx-cursor: hand;";
+
+                hover
+                        = "-fx-background-color: #D0E6D8;"
+                        + "-fx-text-fill: " + VERDE_OSCURO + ";"
+                        + "-fx-font-weight: bold;"
+                        + "-fx-background-radius: 7;"
+                        + "-fx-padding: 10 16 10 16;"
+                        + "-fx-cursor: hand;";
+                break;
+
+            default:
+                normal
+                        = "-fx-background-color: " + VERDE + ";"
+                        + "-fx-text-fill: white;"
+                        + "-fx-font-weight: bold;"
+                        + "-fx-background-radius: 7;"
+                        + "-fx-padding: 10 17 10 17;"
+                        + "-fx-cursor: hand;";
+
+                hover
+                        = "-fx-background-color: " + VERDE_HOVER + ";"
+                        + "-fx-text-fill: white;"
+                        + "-fx-font-weight: bold;"
+                        + "-fx-background-radius: 7;"
+                        + "-fx-padding: 10 17 10 17;"
+                        + "-fx-cursor: hand;";
+                break;
+        }
+
+        boton.setStyle(normal);
+
+        boton.setOnMouseEntered(e -> {
+            if (!boton.isDisabled()) {
+                boton.setStyle(hover);
+            }
+        });
+
+        boton.setOnMouseExited(e -> boton.setStyle(normal));
+    }
+
+    private void estilizarCampo(TextField campo) {
+        campo.setStyle(
+                "-fx-background-color: #F8FAF8;"
+                + "-fx-border-color: #D5E1D9;"
+                + "-fx-border-radius: 7;"
+                + "-fx-background-radius: 7;"
+                + "-fx-padding: 10;"
+                + "-fx-font-size: 13px;"
+                + "-fx-text-fill: " + TEXTO + ";"
+        );
+    }
+
+    private void estilizarEtiqueta(Label etiqueta) {
+        etiqueta.setStyle(
+                "-fx-font-size: 12px;"
+                + "-fx-font-weight: bold;"
+                + "-fx-text-fill: " + TEXTO + ";"
+        );
+    }
+
+    // =====================================================
+    // CARGAR CARTA
+    // =====================================================
     private void mostrarCarta() {
-
         try {
-
-            List<Plato> platos
-                    = pedidoService.mostrarCarta();
-
+            List<Plato> platos = pedidoService.mostrarCarta();
             listaPlatos.setAll(platos);
-
         } catch (SQLException e) {
-
             mostrarError(
-                    "No se pudo cargar la carta:\n"
-                    + e.getMessage()
+                    "No se pudo cargar la carta:\n" + e.getMessage()
             );
         }
     }
 
-    //buscar por Id
+    // =====================================================
+    // BUSCAR POR ID
+    // =====================================================
     private void buscarPorId() {
 
         String texto = txtBuscarId.getText().trim();
 
         if (texto.isEmpty()) {
-
-            mostrarError(
-                    "Ingrese el ID del plato."
-            );
-
+            mostrarError("Ingrese el ID del plato.");
             return;
         }
 
         try {
-
             int id = Integer.parseInt(texto);
 
-            Plato plato
-                    = pedidoService.buscarPlatoPorId(id);
+            Plato plato = pedidoService.buscarPlatoPorId(id);
 
             listaPlatos.clear();
 
             if (plato != null) {
-
                 listaPlatos.add(plato);
-
             } else {
-
                 mostrarInformacion(
-                        "No se encontró ningún plato "
-                        + "con el ID indicado."
+                        "No se encontró ningún plato con el ID indicado."
                 );
             }
 
         } catch (NumberFormatException e) {
-
-            mostrarError(
-                    "El ID debe ser un número."
-            );
-
+            mostrarError("El ID debe ser un número.");
         } catch (SQLException e) {
-
             mostrarError(
-                    "Error al buscar el plato:\n"
-                    + e.getMessage()
+                    "Error al buscar el plato:\n" + e.getMessage()
             );
         }
     }
 
-    //buscar por Nombre
+    // =====================================================
+    // BUSCAR POR NOMBRE
+    // =====================================================
     private void buscarPorNombre() {
 
-        String nombre
-                = txtBuscarNombre.getText().trim();
+        String nombre = txtBuscarNombre.getText().trim();
 
         if (nombre.isEmpty()) {
-
-            mostrarError(
-                    "Ingrese el nombre del plato."
-            );
-
+            mostrarError("Ingrese el nombre del plato.");
             return;
         }
 
         try {
-
             List<Plato> platos
-                    = pedidoService.buscarPlatoPorNombre(
-                            nombre
-                    );
+                    = pedidoService.buscarPlatoPorNombre(nombre);
 
             listaPlatos.setAll(platos);
 
             if (platos.isEmpty()) {
-
                 mostrarInformacion(
-                        "No se encontraron platos "
-                        + "con ese nombre."
+                        "No se encontraron platos con ese nombre."
                 );
             }
 
         } catch (SQLException e) {
-
             mostrarError(
-                    "Error al buscar los platos:\n"
-                    + e.getMessage()
+                    "Error al buscar los platos:\n" + e.getMessage()
             );
         }
     }
 
-    //agregar plato
+    // =====================================================
+    // AGREGAR PLATO AL PEDIDO
+    // =====================================================
     private void agregarPlatoAlPedido() {
 
         if (pedidoActual == null) {
@@ -525,8 +698,13 @@ public class Home {
             return;
         }
 
-        if (!"PENDIENTE".equalsIgnoreCase(pedidoActual.getEstado()) && !"EN_PREPARACION".equalsIgnoreCase(pedidoActual.getEstado())) {
-            mostrarError("El pedido ya no admite más platos (Solo Pendiente o En Preparación).");
+        if (!"PENDIENTE".equalsIgnoreCase(pedidoActual.getEstado())
+                && !"EN_PREPARACION".equalsIgnoreCase(
+                        pedidoActual.getEstado())) {
+            mostrarError(
+                    "El pedido ya no admite más platos "
+                    + "(solo Pendiente o En Preparación)."
+            );
             return;
         }
 
@@ -549,14 +727,17 @@ public class Home {
         }
     }
 
+    // =====================================================
+    // OBTENER CANTIDAD DE UN PLATO
+    // =====================================================
     private int obtenerCantidad(Plato plato) {
 
-        for (DetallePedido detalle
-                : pedidoActual.getDetalles()) {
+        if (pedidoActual == null || plato == null) {
+            return 0;
+        }
 
-            if (detalle.getPlato().getId()
-                    == plato.getId()) {
-
+        for (DetallePedido detalle : pedidoActual.getDetalles()) {
+            if (detalle.getPlato().getId() == plato.getId()) {
                 return detalle.getCantidad();
             }
         }
@@ -564,10 +745,13 @@ public class Home {
         return 0;
     }
 
+    // =====================================================
+    // INFORMACIÓN DEL PEDIDO
+    // =====================================================
     private void actualizarInformacionPedido() {
 
         if (pedidoActual == null) {
-            lblPedido.setText("No hay un pedido activo.");
+            lblPedido.setText("Modo carta: no hay un pedido activo.");
             return;
         }
 
@@ -585,39 +769,29 @@ public class Home {
 
         lblPedido.setText(
                 "Pedido: " + idPedido
-                + " | Mozo: " + mozo
-                + " | Mesa: " + mesa
-        );
-
-        lblPedido.setStyle(
-                "-fx-font-size: 15px;"
-                + "-fx-font-weight: bold;"
+                + "     |     Mozo: " + mozo
+                + "     |     Mesa: " + mesa
         );
     }
 
+    // =====================================================
+    // MENSAJES
+    // =====================================================
     private void mostrarError(String mensaje) {
 
-        Alert alerta = new Alert(
-                Alert.AlertType.ERROR
-        );
-
+        Alert alerta = new Alert(Alert.AlertType.ERROR);
         alerta.setTitle("Error");
         alerta.setHeaderText(null);
         alerta.setContentText(mensaje);
-
         alerta.showAndWait();
     }
 
     private void mostrarInformacion(String mensaje) {
 
-        Alert alerta = new Alert(
-                Alert.AlertType.INFORMATION
-        );
-
+        Alert alerta = new Alert(Alert.AlertType.INFORMATION);
         alerta.setTitle("Información");
         alerta.setHeaderText(null);
         alerta.setContentText(mensaje);
-
         alerta.showAndWait();
     }
 }

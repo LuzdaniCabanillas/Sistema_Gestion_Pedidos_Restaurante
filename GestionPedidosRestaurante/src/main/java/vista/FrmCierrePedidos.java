@@ -6,7 +6,6 @@ import java.sql.SQLException;
 import java.util.List;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.ReadOnlyStringWrapper;
-import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -50,6 +49,14 @@ public class FrmCierrePedidos extends BorderPane {
     private final Button btnActualizar
             = new Button("ACTUALIZAR");
 
+    // Paleta visual del sistema
+    private static final String VERDE = "#285943";
+    private static final String VERDE_HOVER = "#1D4432";
+    private static final String FONDO = "#F3F6F4";
+    private static final String BORDE = "#DCE5DF";
+    private static final String TEXTO = "#26352C";
+    private static final String TEXTO_SECUNDARIO = "#68776D";
+
     public FrmCierrePedidos() {
         construirInterfaz();
         configurarEventos();
@@ -59,23 +66,24 @@ public class FrmCierrePedidos extends BorderPane {
     private void construirInterfaz() {
 
         setPadding(new Insets(25));
-        setStyle("-fx-background-color: #F5F7F5;");
+        setStyle("-fx-background-color: " + FONDO + ";");
 
-        // Título
+        // Encabezado
         Label titulo = new Label("CIERRE DE PEDIDOS");
         titulo.setStyle(
-                "-fx-font-size: 25px;"
+                "-fx-font-family: 'Segoe UI';"
+                + "-fx-font-size: 25px;"
                 + "-fx-font-weight: bold;"
-                + "-fx-text-fill: #245B36;"
+                + "-fx-text-fill: " + VERDE + ";"
         );
 
         Label subtitulo = new Label(
-                "Pedidos entregados con cuenta pagada"
+                "Finaliza los pedidos entregados y con la cuenta pagada."
         );
-
         subtitulo.setStyle(
-                "-fx-font-size: 13px;"
-                + "-fx-text-fill: #657268;"
+                "-fx-font-family: 'Segoe UI';"
+                + "-fx-font-size: 13px;"
+                + "-fx-text-fill: " + TEXTO_SECUNDARIO + ";"
         );
 
         VBox encabezado = new VBox(6, titulo, subtitulo);
@@ -86,107 +94,91 @@ public class FrmCierrePedidos extends BorderPane {
         // Tabla de pedidos
         configurarTabla();
 
-        VBox panelTabla = new VBox(10);
         Label tituloTabla = new Label(
                 "PEDIDOS DISPONIBLES PARA CERRAR"
         );
-
         tituloTabla.setStyle(
-                "-fx-font-size: 15px;"
+                "-fx-font-family: 'Segoe UI';"
+                + "-fx-font-size: 15px;"
                 + "-fx-font-weight: bold;"
+                + "-fx-text-fill: " + TEXTO + ";"
         );
 
-        panelTabla.getChildren().addAll(
-                tituloTabla,
-                tabla
+        VBox panelTabla = new VBox(12, tituloTabla, tabla);
+        panelTabla.setPadding(new Insets(18));
+        panelTabla.setStyle(
+                "-fx-background-color: white;"
+                + "-fx-background-radius: 12;"
+                + "-fx-border-color: " + BORDE + ";"
+                + "-fx-border-radius: 12;"
         );
+        VBox.setVgrow(tabla, javafx.scene.layout.Priority.ALWAYS);
 
-        panelTabla.setPadding(new Insets(0, 0, 20, 0));
-
-        // Panel de detalle
+        // Detalle del pedido seleccionado
         Label tituloDetalle = new Label(
                 "DETALLE DEL PEDIDO SELECCIONADO"
         );
-
         tituloDetalle.setStyle(
-                "-fx-font-size: 15px;"
+                "-fx-font-family: 'Segoe UI';"
+                + "-fx-font-size: 15px;"
                 + "-fx-font-weight: bold;"
+                + "-fx-text-fill: " + TEXTO + ";"
         );
 
         GridPane detalle = new GridPane();
         detalle.setHgap(25);
-        detalle.setVgap(14);
-        detalle.setPadding(new Insets(18));
+        detalle.setVgap(17);
+        detalle.setPadding(new Insets(20));
         detalle.setStyle(
                 "-fx-background-color: white;"
-                + "-fx-background-radius: 8;"
-                + "-fx-border-color: #DCE5DD;"
-                + "-fx-border-radius: 8;"
+                + "-fx-background-radius: 12;"
+                + "-fx-border-color: " + BORDE + ";"
+                + "-fx-border-radius: 12;"
         );
 
-        agregarCampo(detalle, 0, 0, "Pedido:", lblPedido);
-        agregarCampo(detalle, 1, 0, "Mesa:", lblMesa);
-        agregarCampo(detalle, 2, 0, "Cuenta:", lblCuenta);
+        detalle.setMaxWidth(Double.MAX_VALUE);
+
+        agregarCampo(detalle, 0, 0, "Número de pedido", lblPedido);
+        agregarCampo(detalle, 1, 0, "Número de mesa", lblMesa);
+        agregarCampo(detalle, 2, 0, "Número de cuenta", lblCuenta);
 
         agregarCampo(
-                detalle, 0, 1, "Estado del pedido:", lblEstadoPedido
-        );
-
-        agregarCampo(
-                detalle, 1, 1, "Estado de la cuenta:", lblEstadoCuenta
+                detalle, 0, 1, "Estado del pedido", lblEstadoPedido
         );
 
         agregarCampo(
-                detalle, 2, 1, "Método de pago:", lblMetodoPago
+                detalle, 1, 1, "Estado de la cuenta", lblEstadoCuenta
         );
 
         agregarCampo(
-                detalle, 0, 2, "Subtotal:", lblSubtotal
+                detalle, 2, 1, "Método de pago", lblMetodoPago
         );
 
-        agregarCampo(
-                detalle, 1, 2, "IGV:", lblIgv
-        );
-
-        agregarCampo(
-                detalle, 2, 2, "TOTAL PAGADO:", lblTotal
-        );
+        agregarCampo(detalle, 0, 2, "Subtotal", lblSubtotal);
+        agregarCampo(detalle, 1, 2, "IGV", lblIgv);
+        agregarCampo(detalle, 2, 2, "TOTAL PAGADO", lblTotal);
 
         lblTotal.setStyle(
-                "-fx-font-size: 19px;"
+                "-fx-font-family: 'Segoe UI';"
+                + "-fx-font-size: 20px;"
                 + "-fx-font-weight: bold;"
-                + "-fx-text-fill: #245B36;"
+                + "-fx-text-fill: " + VERDE + ";"
         );
 
         // Botones
-        btnCerrar.setStyle(
-                "-fx-background-color: #28643B;"
-                + "-fx-text-fill: white;"
-                + "-fx-font-weight: bold;"
-                + "-fx-padding: 11 20 11 20;"
-                + "-fx-background-radius: 5;"
-        );
-
-        btnActualizar.setStyle(
-                "-fx-background-color: white;"
-                + "-fx-text-fill: #28643B;"
-                + "-fx-border-color: #28643B;"
-                + "-fx-border-radius: 5;"
-                + "-fx-padding: 10 20 10 20;"
-        );
+        estilizarBotonPrincipal(btnCerrar);
+        estilizarBotonSecundario(btnActualizar);
 
         btnCerrar.setDisable(true);
 
-        HBox botones = new HBox(
-                12, btnCerrar, btnActualizar
-        );
-
+        HBox botones = new HBox(12, btnActualizar, btnCerrar);
         botones.setAlignment(Pos.CENTER_RIGHT);
-        botones.setPadding(new Insets(18, 0, 0, 0));
+        botones.setPadding(new Insets(5, 0, 0, 0));
 
         VBox panelInferior = new VBox(
                 12, tituloDetalle, detalle, botones
         );
+        panelInferior.setPadding(new Insets(20, 0, 0, 0));
 
         setCenter(panelTabla);
         setBottom(panelInferior);
@@ -222,7 +214,7 @@ public class FrmCierrePedidos extends BorderPane {
         );
 
         TableColumn<PedidoCierreRow, String> colEstadoPedido
-                = new TableColumn<>("Pedido");
+                = new TableColumn<>("Estado del pedido");
 
         colEstadoPedido.setCellValueFactory(d
                 -> new ReadOnlyStringWrapper(
@@ -231,7 +223,7 @@ public class FrmCierrePedidos extends BorderPane {
         );
 
         TableColumn<PedidoCierreRow, String> colEstadoCuenta
-                = new TableColumn<>("Cuenta");
+                = new TableColumn<>("Estado de la cuenta");
 
         colEstadoCuenta.setCellValueFactory(d
                 -> new ReadOnlyStringWrapper(
@@ -240,7 +232,7 @@ public class FrmCierrePedidos extends BorderPane {
         );
 
         TableColumn<PedidoCierreRow, String> colTotal
-                = new TableColumn<>("Total");
+                = new TableColumn<>("Total pagado");
 
         colTotal.setCellValueFactory(d
                 -> new ReadOnlyStringWrapper(
@@ -268,6 +260,15 @@ public class FrmCierrePedidos extends BorderPane {
         );
 
         tabla.setPrefHeight(300);
+        tabla.setMinHeight(180);
+        tabla.setStyle(
+                "-fx-font-family: 'Segoe UI';"
+                + "-fx-font-size: 12px;"
+                + "-fx-background-color: white;"
+                + "-fx-background-radius: 8;"
+                + "-fx-border-color: " + BORDE + ";"
+                + "-fx-border-radius: 8;"
+        );
     }
 
     private void agregarCampo(
@@ -277,21 +278,88 @@ public class FrmCierrePedidos extends BorderPane {
             String texto,
             Label valor) {
 
-        VBox campo = new VBox(5);
+        VBox campo = new VBox(6);
 
         Label etiqueta = new Label(texto);
         etiqueta.setStyle(
-                "-fx-text-fill: #657268;"
+                "-fx-font-family: 'Segoe UI';"
+                + "-fx-text-fill: " + TEXTO_SECUNDARIO + ";"
                 + "-fx-font-size: 12px;"
         );
 
         valor.setStyle(
-                "-fx-font-size: 14px;"
+                "-fx-font-family: 'Segoe UI';"
+                + "-fx-font-size: 14px;"
                 + "-fx-font-weight: bold;"
+                + "-fx-text-fill: " + TEXTO + ";"
         );
 
         campo.getChildren().addAll(etiqueta, valor);
         grid.add(campo, columna, fila);
+    }
+
+    private void estilizarBotonPrincipal(Button boton) {
+
+        String estiloNormal
+                = "-fx-background-color: " + VERDE + ";"
+                + "-fx-text-fill: white;"
+                + "-fx-font-family: 'Segoe UI';"
+                + "-fx-font-size: 12px;"
+                + "-fx-font-weight: bold;"
+                + "-fx-padding: 12 20 12 20;"
+                + "-fx-background-radius: 7;"
+                + "-fx-cursor: hand;";
+
+        String estiloHover
+                = "-fx-background-color: " + VERDE_HOVER + ";"
+                + "-fx-text-fill: white;"
+                + "-fx-font-family: 'Segoe UI';"
+                + "-fx-font-size: 12px;"
+                + "-fx-font-weight: bold;"
+                + "-fx-padding: 12 20 12 20;"
+                + "-fx-background-radius: 7;"
+                + "-fx-cursor: hand;";
+
+        boton.setStyle(estiloNormal);
+        boton.setOnMouseEntered(e -> {
+            if (!boton.isDisabled()) {
+                boton.setStyle(estiloHover);
+            }
+        });
+        boton.setOnMouseExited(e -> boton.setStyle(estiloNormal));
+    }
+
+    private void estilizarBotonSecundario(Button boton) {
+
+        String estiloNormal
+                = "-fx-background-color: white;"
+                + "-fx-text-fill: " + VERDE + ";"
+                + "-fx-font-family: 'Segoe UI';"
+                + "-fx-font-size: 12px;"
+                + "-fx-font-weight: bold;"
+                + "-fx-border-color: " + VERDE + ";"
+                + "-fx-border-width: 1px;"
+                + "-fx-border-radius: 7;"
+                + "-fx-background-radius: 7;"
+                + "-fx-padding: 11 20 11 20;"
+                + "-fx-cursor: hand;";
+
+        String estiloHover
+                = "-fx-background-color: #E8F0EB;"
+                + "-fx-text-fill: " + VERDE_HOVER + ";"
+                + "-fx-font-family: 'Segoe UI';"
+                + "-fx-font-size: 12px;"
+                + "-fx-font-weight: bold;"
+                + "-fx-border-color: " + VERDE_HOVER + ";"
+                + "-fx-border-width: 1px;"
+                + "-fx-border-radius: 7;"
+                + "-fx-background-radius: 7;"
+                + "-fx-padding: 11 20 11 20;"
+                + "-fx-cursor: hand;";
+
+        boton.setStyle(estiloNormal);
+        boton.setOnMouseEntered(e -> boton.setStyle(estiloHover));
+        boton.setOnMouseExited(e -> boton.setStyle(estiloNormal));
     }
 
     private void configurarEventos() {
@@ -458,6 +526,7 @@ public class FrmCierrePedidos extends BorderPane {
     }
 
     private String moneda(java.math.BigDecimal importe) {
+
         if (importe == null) {
             importe = java.math.BigDecimal.ZERO;
         }
