@@ -309,12 +309,13 @@ public class Home {
 
         if (!esperarCierre) {
 
-            Button btnInicio = new Button("Inicio / Carta");
+            Button btnInicio = new Button("Carta");
             Button btnPedidos = new Button("Tomar pedido");
             Button btnSeguimientoPedidos = new Button("Seguimiento de Pedidos");
             Button btnAtencion = new Button("Atención de mesas");
             Button btnMesas = new Button("Gestión de mesas");
             Button btnPlatos = new Button("Gestión de platos");
+            Button btnCierrePedidos = new Button("Cierre de pedidos");
             Button btnContraer = new Button("☰");
 
             VBox opcionesMenu = new VBox(
@@ -324,7 +325,8 @@ public class Home {
                     btnSeguimientoPedidos,
                     btnAtencion,
                     btnMesas,
-                    btnPlatos
+                    btnPlatos,
+                    btnCierrePedidos
             );
 
             VBox menuLateral = new VBox(
@@ -338,7 +340,7 @@ public class Home {
             menuLateral.setStyle("-fx-background-color: #eeeeee;");
 
             for (Button boton : new Button[]{
-                btnInicio, btnPedidos, btnAtencion, btnMesas, btnPlatos
+                btnInicio, btnPedidos, btnAtencion, btnMesas, btnPlatos, btnCierrePedidos
             }) {
                 boton.setMaxWidth(Double.MAX_VALUE);
             }
@@ -349,6 +351,7 @@ public class Home {
             btnAtencion.setOnAction(e -> new FrmAtencionMesa().mostrar());
             btnMesas.setOnAction(e -> new FrmMesa().mostrar());
             btnPlatos.setOnAction(e -> new FrmPlato().mostrar());
+            btnCierrePedidos.setOnAction(e -> new FrmCierrePedidos().mostrar());
 
             btnContraer.setOnAction(e -> {
                 boolean visible = opcionesMenu.isVisible();
