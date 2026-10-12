@@ -48,10 +48,13 @@
                 <!-- Clase principal de tu aplicación -->
                 <!-- <mainClass>vista.FrmMesa</mainClass> -->
                 <mainClass>vista.MainApp</mainClass>
+
             </configuration>
         </plugin>
     </plugins>
     </build>
+    <name>GestionPedidosRestaurante</name>
+    
 
     
 </project>

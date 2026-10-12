@@ -1,7 +1,5 @@
 package vista;
 
-import controlador.MesaDAO;
-import java.sql.SQLException;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -19,10 +17,12 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
@@ -31,21 +31,19 @@ import modelo.DetallePedido;
 import modelo.Mesa;
 import modelo.Pedido;
 import service.PedidoService;
-
-/**
- * LEAN
- */
 public class FrmSeguimientoPedidos {
+
 
     private Stage ventana;
 
     private ComboBox<Mesa> cboMesa;
 
-    private javafx.scene.control.TextField txtIdPedido;
-    private javafx.scene.control.TextField txtFecha;
-    private javafx.scene.control.TextField txtMozo;
-    private javafx.scene.control.TextField txtEstado;
-    private javafx.scene.control.TextField txtSubtotal;
+    private TextField txtIdPedido;
+    private TextField txtFecha;
+    private TextField txtMozo;
+    private TextField txtEstado;
+    private TextField txtSubtotal;
+
     private Button btnGestionarCuenta;
 
     private TableView<DetallePedido> tablaDetalles;
@@ -72,6 +70,17 @@ public class FrmSeguimientoPedidos {
 
     private Pedido pedidoActual;
 
+    // Colores generales del diseño.
+    private static final String VERDE = "#285943";
+    private static final String VERDE_HOVER = "#1D4633";
+    private static final String VERDE_CLARO = "#E5F0E7";
+    private static final String FONDO = "#F4F7F4";
+    private static final String BLANCO = "#FFFFFF";
+    private static final String TEXTO = "#26382D";
+    private static final String BORDE = "#DCE6DE";
+    private static final String GRIS = "#68776D";
+    private static final String ROJO_SUAVE = "#A94442";
+
     public FrmSeguimientoPedidos() {
         pedidoService = new PedidoService();
     }
@@ -80,15 +89,40 @@ public class FrmSeguimientoPedidos {
 
         ventana = new Stage();
 
+        // Título principal.
         Label titulo = new Label("SEGUIMIENTO DE PEDIDOS");
         titulo.setStyle(
-                "-fx-font-size: 24px;"
+                "-fx-font-size: 25px;"
                 + "-fx-font-weight: bold;"
+                + "-fx-text-fill: " + VERDE + ";"
+                + "-fx-font-family: 'Segoe UI';"
         );
 
+        Label descripcion = new Label(
+                "Consulta los platos de cada mesa y actualiza su estado."
+        );
+        descripcion.setStyle(
+                "-fx-font-size: 13px;"
+                + "-fx-text-fill: " + GRIS + ";"
+                + "-fx-font-family: 'Segoe UI';"
+        );
+
+        VBox encabezado = new VBox(6, titulo, descripcion);
+        encabezado.setAlignment(Pos.CENTER_LEFT);
+        encabezado.setPadding(new Insets(20, 24, 18, 24));
+        encabezado.setStyle(
+                "-fx-background-color: " + BLANCO + ";"
+                + "-fx-background-radius: 12;"
+                + "-fx-border-color: " + BORDE + ";"
+                + "-fx-border-radius: 12;"
+        );
+
+        // Selector de mesa.
         cboMesa = new ComboBox<>();
-        cboMesa.setPrefWidth(220);
+        cboMesa.setPrefWidth(240);
+        cboMesa.setMaxWidth(Double.MAX_VALUE);
         cboMesa.setPromptText("Seleccione una mesa");
+        cboMesa.setStyle(estiloComboBox());
 
         // Mostrar el número de mesa en el ComboBox.
         cboMesa.setConverter(new StringConverter<Mesa>() {
@@ -114,34 +148,85 @@ public class FrmSeguimientoPedidos {
         txtEstado = crearCampo();
         txtSubtotal = crearCampo();
 
+        // Panel de información del pedido.
         GridPane datos = new GridPane();
-        datos.setHgap(12);
-        datos.setVgap(12);
-        datos.setPadding(new Insets(15));
+        datos.setHgap(18);
+        datos.setVgap(14);
+        datos.setPadding(new Insets(20));
+        datos.setStyle(
+                "-fx-background-color: " + BLANCO + ";"
+                + "-fx-background-radius: 12;"
+                + "-fx-border-color: " + BORDE + ";"
+                + "-fx-border-radius: 12;"
+        );
 
-        datos.add(new Label("Mesa ocupada:"), 0, 0);
+        datos.add(crearEtiqueta("Mesa ocupada"), 0, 0);
         datos.add(cboMesa, 1, 0);
 
-        datos.add(new Label("ID Pedido:"), 0, 1);
+        datos.add(crearEtiqueta("ID del pedido"), 0, 1);
         datos.add(txtIdPedido, 1, 1);
 
-        datos.add(new Label("Fecha y hora:"), 2, 1);
+        datos.add(crearEtiqueta("Fecha y hora"), 2, 1);
         datos.add(txtFecha, 3, 1);
 
-        datos.add(new Label("Mozo:"), 0, 2);
+        datos.add(crearEtiqueta("Mozo"), 0, 2);
         datos.add(txtMozo, 1, 2);
 
-        datos.add(new Label("Estado del plato:"), 2, 2);
+        datos.add(crearEtiqueta("Estado del plato"), 2, 2);
         datos.add(txtEstado, 3, 2);
 
-        datos.add(new Label("Subtotal:"), 0, 3);
+        datos.add(crearEtiqueta("Subtotal del pedido"), 0, 3);
         datos.add(txtSubtotal, 1, 3);
 
-        // Tabla de platos de los pedidos de la mesa seleccionada.
+        // Distribución adaptable de las columnas.
+        for (int i = 1; i <= 3; i += 2) {
+            javafx.scene.layout.ColumnConstraints columna
+                    = new javafx.scene.layout.ColumnConstraints();
+            columna.setHgrow(Priority.ALWAYS);
+            columna.setFillWidth(true);
+            datos.getColumnConstraints().add(columna);
+        }
+
+        // Tabla de platos.
+        Label tituloTabla = new Label("PLATOS DEL PEDIDO");
+        tituloTabla.setStyle(
+                "-fx-font-size: 16px;"
+                + "-fx-font-weight: bold;"
+                + "-fx-text-fill: " + TEXTO + ";"
+                + "-fx-font-family: 'Segoe UI';"
+        );
+
+        Label ayudaTabla = new Label(
+                "Selecciona un plato para habilitar la acción correspondiente."
+        );
+        ayudaTabla.setStyle(
+                "-fx-font-size: 12px;"
+                + "-fx-text-fill: " + GRIS + ";"
+        );
+
+        VBox encabezadoTabla = new VBox(5, tituloTabla, ayudaTabla);
+
         tablaDetalles = new TableView<>();
         tablaDetalles.setItems(listaDetalles);
         tablaDetalles.setColumnResizePolicy(
                 TableView.CONSTRAINED_RESIZE_POLICY
+        );
+        tablaDetalles.setPlaceholder(
+                new Label("No hay platos para mostrar en esta mesa.")
+        );
+        tablaDetalles.setPrefHeight(320);
+        tablaDetalles.setMinHeight(220);
+        tablaDetalles.setStyle(
+                "-fx-background-color: " + BLANCO + ";"
+                + "-fx-control-inner-background: " + BLANCO + ";"
+                + "-fx-control-inner-background-alt: #F8FAF8;"
+                + "-fx-table-cell-border-color: #E8EEE9;"
+                + "-fx-selection-bar: " + VERDE_CLARO + ";"
+                + "-fx-selection-bar-non-focused: " + VERDE_CLARO + ";"
+                + "-fx-border-color: " + BORDE + ";"
+                + "-fx-border-radius: 10;"
+                + "-fx-background-radius: 10;"
+                + "-fx-font-size: 12px;"
         );
 
         colPedido = new TableColumn<>("ID Pedido");
@@ -187,6 +272,13 @@ public class FrmSeguimientoPedidos {
                 )
         );
 
+        colPedido.setMinWidth(85);
+        colPlato.setMinWidth(170);
+        colCantidad.setMinWidth(90);
+        colPrecio.setMinWidth(120);
+        colSubtotal.setMinWidth(100);
+        colEstado.setMinWidth(125);
+
         tablaDetalles.getColumns().addAll(
                 colPedido,
                 colPlato,
@@ -202,6 +294,41 @@ public class FrmSeguimientoPedidos {
         btnActualizar = new Button("ACTUALIZAR");
         btnGestionarCuenta = new Button("GESTIONAR CUENTA");
         btnVolver = new Button("VOLVER");
+
+        estilizarBoton(
+                btnEnviarCocina,
+                VERDE,
+                VERDE_HOVER,
+                BLANCO
+        );
+
+        estilizarBoton(
+                btnRegistrarEntrega,
+                "#477B58",
+                "#356746",
+                BLANCO
+        );
+
+        estilizarBoton(
+                btnActualizar,
+                "#E7EEE8",
+                "#D6E4D8",
+                VERDE
+        );
+
+        estilizarBoton(
+                btnGestionarCuenta,
+                "#DDEBE0",
+                "#C9DECE",
+                VERDE
+        );
+
+        estilizarBoton(
+                btnVolver,
+                "#EEF1EE",
+                "#DDE4DE",
+                TEXTO
+        );
 
         btnEnviarCocina.setOnAction(e -> enviarACocina());
         btnRegistrarEntrega.setOnAction(e -> registrarEntrega());
@@ -219,24 +346,29 @@ public class FrmSeguimientoPedidos {
         );
 
         botones.setAlignment(Pos.CENTER);
-        botones.setPadding(new Insets(15));
+        botones.setPadding(new Insets(12, 0, 0, 0));
+        botones.setSpacing(10);
 
+        // Panel central.
         VBox centro = new VBox(
-                10,
+                16,
                 datos,
-                new Label("PLATOS DEL PEDIDO"),
+                encabezadoTabla,
                 tablaDetalles,
                 botones
         );
 
-        centro.setPadding(new Insets(15));
+        centro.setPadding(new Insets(18, 24, 22, 24));
+        VBox.setVgrow(tablaDetalles, Priority.ALWAYS);
 
         BorderPane root = new BorderPane();
-        root.setTop(titulo);
+        root.setTop(encabezado);
         root.setCenter(centro);
-
-        BorderPane.setAlignment(titulo, Pos.CENTER);
-        BorderPane.setMargin(titulo, new Insets(20));
+        root.setPadding(new Insets(14));
+        root.setStyle(
+                "-fx-background-color: " + FONDO + ";"
+                + "-fx-font-family: 'Segoe UI';"
+        );
 
         cboMesa.setOnAction(e -> cargarPedidosDeMesa());
 
@@ -258,17 +390,105 @@ public class FrmSeguimientoPedidos {
                     actualizarBotones();
                 });
 
-        Scene scene = new Scene(root, 1050, 680);
+        Scene scene = new Scene(root, 1150, 760);
 
         ventana.setTitle("Sistema de Gestión de Pedidos - Seguimiento");
         ventana.setScene(scene);
+        ventana.setMinWidth(1000);
+        ventana.setMinHeight(680);
 
         actualizar();
 
         ventana.show();
-
     }
 
+    // Estilo para las etiquetas del formulario.
+    private Label crearEtiqueta(String texto) {
+        Label etiqueta = new Label(texto);
+        etiqueta.setStyle(
+                "-fx-font-size: 12px;"
+                + "-fx-font-weight: bold;"
+                + "-fx-text-fill: " + TEXTO + ";"
+        );
+        return etiqueta;
+    }
+
+    // Estilo de los campos informativos.
+    private TextField crearCampo() {
+        TextField campo = new TextField();
+
+        campo.setEditable(false);
+        campo.setPrefWidth(220);
+        campo.setMaxWidth(Double.MAX_VALUE);
+        campo.setStyle(
+                "-fx-background-color: #F7F9F7;"
+                + "-fx-text-fill: " + TEXTO + ";"
+                + "-fx-font-size: 13px;"
+                + "-fx-background-radius: 7;"
+                + "-fx-border-color: " + BORDE + ";"
+                + "-fx-border-radius: 7;"
+                + "-fx-padding: 9 10 9 10;"
+        );
+
+        return campo;
+    }
+
+    private String estiloComboBox() {
+        return "-fx-background-color: #FFFFFF;"
+                + "-fx-font-size: 13px;"
+                + "-fx-background-radius: 7;"
+                + "-fx-border-color: " + BORDE + ";"
+                + "-fx-border-radius: 7;"
+                + "-fx-padding: 3;";
+    }
+
+    // Estilo reutilizable para los botones y su efecto hover.
+    private void estilizarBoton(
+            Button boton,
+            String colorFondo,
+            String colorHover,
+            String colorTexto) {
+
+        boton.setMinHeight(40);
+        boton.setPrefHeight(42);
+        boton.setPadding(new Insets(10, 15, 10, 15));
+        boton.setStyle(
+                "-fx-background-color: " + colorFondo + ";"
+                + "-fx-text-fill: " + colorTexto + ";"
+                + "-fx-font-size: 11px;"
+                + "-fx-font-weight: bold;"
+                + "-fx-background-radius: 8;"
+                + "-fx-border-radius: 8;"
+                + "-fx-cursor: hand;"
+        );
+
+        boton.setOnMouseEntered(e -> {
+            if (!boton.isDisabled()) {
+                boton.setStyle(
+                        "-fx-background-color: " + colorHover + ";"
+                        + "-fx-text-fill: " + colorTexto + ";"
+                        + "-fx-font-size: 11px;"
+                        + "-fx-font-weight: bold;"
+                        + "-fx-background-radius: 8;"
+                        + "-fx-border-radius: 8;"
+                        + "-fx-cursor: hand;"
+                );
+            }
+        });
+
+        boton.setOnMouseExited(e -> {
+            boton.setStyle(
+                    "-fx-background-color: " + colorFondo + ";"
+                    + "-fx-text-fill: " + colorTexto + ";"
+                    + "-fx-font-size: 11px;"
+                    + "-fx-font-weight: bold;"
+                    + "-fx-background-radius: 8;"
+                    + "-fx-border-radius: 8;"
+                    + "-fx-cursor: hand;"
+            );
+        });
+    }
+    
     private void abrirFrmCuenta() {
         try {
             FrmCuenta frmCuenta = new FrmCuenta();
@@ -291,14 +511,7 @@ public class FrmSeguimientoPedidos {
         }
     }
 
-    //>
-    private javafx.scene.control.TextField crearCampo() {
-        javafx.scene.control.TextField campo
-                = new javafx.scene.control.TextField();
-
-        campo.setEditable(false);
-        return campo;
-    }
+    
 
     // Cargar mesas ocupadas que tengan pedidos por atender
     // o pedidos que ya fueron entregados.
@@ -367,6 +580,7 @@ public class FrmSeguimientoPedidos {
 
             if (mesaParaSeleccionar == null) {
                 limpiarDatos();
+                actualizarBotones();
             } else {
                 cargarPedidosDeMesa();
             }
@@ -387,6 +601,7 @@ public class FrmSeguimientoPedidos {
         pedidosDeMesa.clear();
         listaDetalles.clear();
         pedidoActual = null;
+        detalleActual = null;
 
         if (mesaSeleccionada == null) {
             limpiarDatos();
@@ -443,6 +658,7 @@ public class FrmSeguimientoPedidos {
                         = tablaDetalles.getSelectionModel().getSelectedItem();
 
                 if (detalleSeleccionado != null) {
+                    detalleActual = detalleSeleccionado;
                     pedidoActual = detalleSeleccionado.getPedido();
                     mostrarDatosPedido();
                 }
@@ -609,6 +825,7 @@ public class FrmSeguimientoPedidos {
     private void limpiarDatos() {
 
         pedidoActual = null;
+        detalleActual = null;
 
         txtIdPedido.clear();
         txtFecha.clear();

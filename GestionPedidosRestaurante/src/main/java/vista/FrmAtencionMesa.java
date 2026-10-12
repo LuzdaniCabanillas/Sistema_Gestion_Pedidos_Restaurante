@@ -14,8 +14,10 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -24,7 +26,6 @@ import modelo.Mesa;
 import modelo.Mozo;
 
 import service.AtencionMesaService;
-
 import controlador.MozoDAO;
 
 import java.time.LocalDateTime;
@@ -44,11 +45,23 @@ public class FrmAtencionMesa extends Application {
     private Button btnActualizar;
     private Button btnFinalizar;
     private Button btnEliminar;
+    private Button btnVolver;
 
     private TableView<AtencionMesa> tablaAtenciones;
 
     private AtencionMesaService atencionService;
     private MozoDAO mozoDAO;
+
+    // Colores del diseño.
+    private static final String VERDE = "#285943";
+    private static final String VERDE_HOVER = "#1D4633";
+    private static final String VERDE_CLARO = "#E5F0E7";
+    private static final String FONDO = "#F4F7F4";
+    private static final String BLANCO = "#FFFFFF";
+    private static final String TEXTO = "#26382D";
+    private static final String GRIS = "#68776D";
+    private static final String BORDE = "#DCE6DE";
+    private static final String ROJO = "#A94442";
 
     @Override
     public void start(Stage stage) {
@@ -56,27 +69,56 @@ public class FrmAtencionMesa extends Application {
         atencionService = new AtencionMesaService();
         mozoDAO = new MozoDAO();
 
-        // Título
-        Label lblTitulo
-                = new Label("GESTIÓN DE ATENCIÓN DE MESAS");
-
+        // Título principal.
+        Label lblTitulo = new Label("GESTIÓN DE ATENCIÓN DE MESAS");
         lblTitulo.setStyle(
-                "-fx-font-size: 24px;"
+                "-fx-font-size: 25px;"
                 + "-fx-font-weight: bold;"
+                + "-fx-text-fill: " + VERDE + ";"
+                + "-fx-font-family: 'Segoe UI';"
         );
 
-        // Etiquetas
-        Label lblId = new Label("ID:");
-        Label lblMesa = new Label("Mesa:");
-        Label lblMozo = new Label("Mozo:");
-        Label lblEstado = new Label("Estado:");
-        Label lblFechaInicio = new Label("Fecha inicio:");
-        Label lblFechaFin = new Label("Fecha fin:");
+        Label lblDescripcion = new Label(
+                "Administra el inicio, seguimiento y finalización "
+                + "de la atención de cada mesa."
+        );
+        lblDescripcion.setStyle(
+                "-fx-font-size: 13px;"
+                + "-fx-text-fill: " + GRIS + ";"
+                + "-fx-font-family: 'Segoe UI';"
+        );
 
-        // Campos
-        txtId = new TextField();
+        VBox encabezado = new VBox(6, lblTitulo, lblDescripcion);
+        encabezado.setAlignment(Pos.CENTER_LEFT);
+        encabezado.setPadding(new Insets(20, 24, 20, 24));
+        encabezado.setStyle(
+                "-fx-background-color: " + BLANCO + ";"
+                + "-fx-background-radius: 12;"
+                + "-fx-border-color: " + BORDE + ";"
+                + "-fx-border-radius: 12;"
+        );
+
+        // Etiquetas del formulario.
+        Label lblId = crearEtiqueta("ID de atención");
+        Label lblMesa = crearEtiqueta("Mesa");
+        Label lblMozo = crearEtiqueta("Mozo");
+        Label lblEstado = crearEtiqueta("Estado");
+        Label lblFechaInicio = crearEtiqueta("Fecha de inicio");
+        Label lblFechaFin = crearEtiqueta("Fecha de finalización");
+
+        // Campos del formulario.
+        txtId = crearCampo();
         cboMesa = new ComboBox<>();
         cboMozo = new ComboBox<>();
+
+        cboMesa.setPromptText("Seleccione una mesa");
+        cboMozo.setPromptText("Seleccione un mozo");
+
+        cboMesa.setMaxWidth(Double.MAX_VALUE);
+        cboMozo.setMaxWidth(Double.MAX_VALUE);
+
+        cboMesa.setStyle(estiloComboBox());
+        cboMozo.setStyle(estiloComboBox());
 
         ObservableList<Mozo> listaMozos
                 = FXCollections.observableArrayList(
@@ -84,22 +126,27 @@ public class FrmAtencionMesa extends Application {
                 );
         cboMozo.setItems(listaMozos);
 
-        txtEstado = new TextField();
-        txtFechaInicio = new TextField();
-        txtFechaFin = new TextField();
+        txtEstado = crearCampo();
+        txtFechaInicio = crearCampo();
+        txtFechaFin = crearCampo();
 
-        // Campos que no se escriben manualmente
+        // Campos que no se escriben manualmente.
         txtId.setEditable(false);
         txtEstado.setEditable(false);
         txtFechaInicio.setEditable(false);
         txtFechaFin.setEditable(false);
 
-        // Formulario
+        // Formulario.
         GridPane formulario = new GridPane();
-
-        formulario.setHgap(10);
-        formulario.setVgap(10);
-        formulario.setPadding(new Insets(10));
+        formulario.setHgap(18);
+        formulario.setVgap(14);
+        formulario.setPadding(new Insets(20));
+        formulario.setStyle(
+                "-fx-background-color: " + BLANCO + ";"
+                + "-fx-background-radius: 12;"
+                + "-fx-border-color: " + BORDE + ";"
+                + "-fx-border-radius: 12;"
+        );
 
         formulario.add(lblId, 0, 0);
         formulario.add(txtId, 1, 0);
@@ -113,33 +160,151 @@ public class FrmAtencionMesa extends Application {
         formulario.add(lblEstado, 0, 3);
         formulario.add(txtEstado, 1, 3);
 
-        formulario.add(lblFechaInicio, 0, 4);
-        formulario.add(txtFechaInicio, 1, 4);
+        formulario.add(lblFechaInicio, 2, 0);
+        formulario.add(txtFechaInicio, 3, 0);
 
-        formulario.add(lblFechaFin, 0, 5);
-        formulario.add(txtFechaFin, 1, 5);
+        formulario.add(lblFechaFin, 2, 1);
+        formulario.add(txtFechaFin, 3, 1);
 
-        // Botones
+        // Ajustar el ancho de las columnas de controles.
+        ColumnConstraints columnaEtiqueta1 = new ColumnConstraints();
+        columnaEtiqueta1.setMinWidth(125);
+
+        ColumnConstraints columnaControl1 = new ColumnConstraints();
+        columnaControl1.setHgrow(Priority.ALWAYS);
+        columnaControl1.setFillWidth(true);
+
+        ColumnConstraints columnaEtiqueta2 = new ColumnConstraints();
+        columnaEtiqueta2.setMinWidth(145);
+
+        ColumnConstraints columnaControl2 = new ColumnConstraints();
+        columnaControl2.setHgrow(Priority.ALWAYS);
+        columnaControl2.setFillWidth(true);
+
+        formulario.getColumnConstraints().addAll(
+                columnaEtiqueta1,
+                columnaControl1,
+                columnaEtiqueta2,
+                columnaControl2
+        );
+
+        // Botones.
         btnNuevo = new Button("NUEVO");
         btnIniciar = new Button("INICIAR");
         btnActualizar = new Button("ACTUALIZAR");
         btnFinalizar = new Button("FINALIZAR");
         btnEliminar = new Button("ELIMINAR");
+        btnVolver = new Button("VOLVER");
 
-        HBox botones = new HBox(10);
+        estilizarBoton(
+                btnNuevo,
+                "#E7EEE8",
+                "#D6E4D8",
+                VERDE
+        );
 
-        botones.setAlignment(Pos.CENTER);
+        estilizarBoton(
+                btnIniciar,
+                VERDE,
+                VERDE_HOVER,
+                BLANCO
+        );
 
-        botones.getChildren().addAll(
+        estilizarBoton(
+                btnActualizar,
+                "#DDEBE0",
+                "#C9DECE",
+                VERDE
+        );
+
+        estilizarBoton(
+                btnFinalizar,
+                "#477B58",
+                "#356746",
+                BLANCO
+        );
+
+        estilizarBoton(
+                btnEliminar,
+                "#F8E9E8",
+                "#F0D4D2",
+                ROJO
+        );
+
+        estilizarBoton(
+                btnVolver,
+                "#EEF1EE",
+                "#DDE4DE",
+                TEXTO
+        );
+
+        btnVolver.setPrefWidth(100);
+
+        btnVolver.setOnAction(e -> stage.close());
+
+        HBox botones = new HBox(
+                10,
                 btnNuevo,
                 btnIniciar,
                 btnActualizar,
                 btnFinalizar,
-                btnEliminar
+                btnEliminar,
+                btnVolver
         );
 
-        // Tabla
+        botones.setAlignment(Pos.CENTER);
+        botones.setPadding(new Insets(8, 0, 8, 0));
+        botones.setSpacing(10);
+
+        // Título de la tabla.
+        Label lblTituloTabla = new Label("HISTORIAL DE ATENCIONES");
+        lblTituloTabla.setStyle(
+                "-fx-font-size: 16px;"
+                + "-fx-font-weight: bold;"
+                + "-fx-text-fill: " + TEXTO + ";"
+                + "-fx-font-family: 'Segoe UI';"
+        );
+
+        Label lblAyudaTabla = new Label(
+                "Selecciona una atención para consultar sus datos."
+        );
+        lblAyudaTabla.setStyle(
+                "-fx-font-size: 12px;"
+                + "-fx-text-fill: " + GRIS + ";"
+        );
+
+        VBox encabezadoTabla = new VBox(
+                5,
+                lblTituloTabla,
+                lblAyudaTabla
+        );
+
+        // Tabla.
         tablaAtenciones = new TableView<>();
+
+        tablaAtenciones.setColumnResizePolicy(
+                TableView.CONSTRAINED_RESIZE_POLICY
+        );
+
+        tablaAtenciones.setPlaceholder(
+                new Label("No hay atenciones registradas.")
+        );
+
+        tablaAtenciones.setPrefHeight(300);
+        tablaAtenciones.setMinHeight(200);
+
+        tablaAtenciones.setStyle(
+                "-fx-background-color: " + BLANCO + ";"
+                + "-fx-control-inner-background: " + BLANCO + ";"
+                + "-fx-control-inner-background-alt: #F8FAF8;"
+                + "-fx-table-cell-border-color: #E8EEE9;"
+                + "-fx-selection-bar: " + VERDE_CLARO + ";"
+                + "-fx-selection-bar-non-focused: " + VERDE_CLARO + ";"
+                + "-fx-border-color: " + BORDE + ";"
+                + "-fx-border-radius: 10;"
+                + "-fx-background-radius: 10;"
+                + "-fx-font-size: 12px;"
+        );
 
         TableColumn<AtencionMesa, Integer> colId
                 = new TableColumn<>("ID");
@@ -147,6 +312,7 @@ public class FrmAtencionMesa extends Application {
         colId.setCellValueFactory(
                 new PropertyValueFactory<>("id")
         );
+        colId.setMinWidth(55);
 
         TableColumn<AtencionMesa, Integer> colMesa
                 = new TableColumn<>("Mesa");
@@ -154,6 +320,7 @@ public class FrmAtencionMesa extends Application {
         colMesa.setCellValueFactory(
                 new PropertyValueFactory<>("mesaId")
         );
+        colMesa.setMinWidth(65);
 
         TableColumn<AtencionMesa, Integer> colMozo
                 = new TableColumn<>("Mozo");
@@ -161,20 +328,23 @@ public class FrmAtencionMesa extends Application {
         colMozo.setCellValueFactory(
                 new PropertyValueFactory<>("mozoId")
         );
+        colMozo.setMinWidth(65);
 
         TableColumn<AtencionMesa, LocalDateTime> colInicio
-                = new TableColumn<>("Fecha inicio");
+                = new TableColumn<>("Fecha de inicio");
 
         colInicio.setCellValueFactory(
                 new PropertyValueFactory<>("fechaInicio")
         );
+        colInicio.setMinWidth(170);
 
         TableColumn<AtencionMesa, LocalDateTime> colFin
-                = new TableColumn<>("Fecha fin");
+                = new TableColumn<>("Fecha de finalización");
 
         colFin.setCellValueFactory(
                 new PropertyValueFactory<>("fechaFin")
         );
+        colFin.setMinWidth(185);
 
         TableColumn<AtencionMesa, String> colEstado
                 = new TableColumn<>("Estado");
@@ -182,6 +352,7 @@ public class FrmAtencionMesa extends Application {
         colEstado.setCellValueFactory(
                 new PropertyValueFactory<>("estado")
         );
+        colEstado.setMinWidth(100);
 
         tablaAtenciones.getColumns().addAll(
                 colId,
@@ -192,37 +363,39 @@ public class FrmAtencionMesa extends Application {
                 colEstado
         );
 
-        tablaAtenciones.setPrefHeight(280);
-
-        // Contenedor principal
-        VBox root = new VBox(15);
-
-        root.setPadding(new Insets(20));
-        root.setAlignment(Pos.TOP_CENTER);
-
-        root.getChildren().addAll(
-                lblTitulo,
+        // Contenedor principal.
+        VBox root = new VBox(
+                16,
+                encabezado,
                 formulario,
                 botones,
+                encabezadoTabla,
                 tablaAtenciones
         );
 
-        // Escena
-        Scene scene
-                = new Scene(root, 1000, 650);
-
-        stage.setTitle(
-                "Gestión de Atención de Mesas"
+        root.setPadding(new Insets(18, 24, 24, 24));
+        root.setAlignment(Pos.TOP_CENTER);
+        root.setStyle(
+                "-fx-background-color: " + FONDO + ";"
+                + "-fx-font-family: 'Segoe UI';"
         );
 
+        VBox.setVgrow(tablaAtenciones, Priority.ALWAYS);
+
+        // Escena.
+        Scene scene = new Scene(root, 1100, 760);
+
+        stage.setTitle("Gestión de Atención de Mesas");
         stage.setScene(scene);
+        stage.setMinWidth(950);
+        stage.setMinHeight(680);
         stage.show();
+
         cargarMesas();
         cargarMozos();
-
         cargarAtenciones();
 
-        // Seleccionar una fila
+        // Seleccionar una fila.
         tablaAtenciones.setOnMouseClicked(event -> {
 
             AtencionMesa seleccionada
@@ -233,71 +406,133 @@ public class FrmAtencionMesa extends Application {
             if (seleccionada != null) {
 
                 txtId.setText(
-                        String.valueOf(
-                                seleccionada.getId()
-                        )
+                        String.valueOf(seleccionada.getId())
                 );
 
-                seleccionarMesa(
-                        seleccionada.getMesaId()
-                );
+                seleccionarMesa(seleccionada.getMesaId());
+                seleccionarMozo(seleccionada.getMozoId());
 
-                seleccionarMozo(
-                        seleccionada.getMozoId()
-                );
-
-                txtEstado.setText(
-                        seleccionada.getEstado()
-                );
+                txtEstado.setText(seleccionada.getEstado());
 
                 if (seleccionada.getFechaInicio() != null) {
-
                     txtFechaInicio.setText(
-                            seleccionada
-                                    .getFechaInicio()
-                                    .toString()
+                            seleccionada.getFechaInicio().toString()
                     );
-
                 } else {
-
                     txtFechaInicio.clear();
                 }
 
                 if (seleccionada.getFechaFin() != null) {
-
                     txtFechaFin.setText(
-                            seleccionada
-                                    .getFechaFin()
-                                    .toString()
+                            seleccionada.getFechaFin().toString()
                     );
-
                 } else {
-
                     txtFechaFin.clear();
                 }
             }
         });
 
-        // Botones
-        btnNuevo.setOnAction(
-                event -> limpiarCampos()
+        // Acciones de los botones.
+        btnNuevo.setOnAction(event -> limpiarCampos());
+
+        btnIniciar.setOnAction(event -> iniciarAtencion());
+
+        btnActualizar.setOnAction(event -> actualizarAtencion());
+
+        btnFinalizar.setOnAction(event -> finalizarAtencion());
+
+        btnEliminar.setOnAction(event -> eliminarAtencion());
+    }
+
+    // Estilo para las etiquetas.
+    private Label crearEtiqueta(String texto) {
+        Label etiqueta = new Label(texto);
+
+        etiqueta.setStyle(
+                "-fx-font-size: 12px;"
+                + "-fx-font-weight: bold;"
+                + "-fx-text-fill: " + TEXTO + ";"
         );
 
-        btnIniciar.setOnAction(
-                event -> iniciarAtencion()
+        return etiqueta;
+    }
+
+    // Estilo para los campos de texto.
+    private TextField crearCampo() {
+        TextField campo = new TextField();
+
+        campo.setPrefWidth(200);
+        campo.setMaxWidth(Double.MAX_VALUE);
+
+        campo.setStyle(
+                "-fx-background-color: #F7F9F7;"
+                + "-fx-text-fill: " + TEXTO + ";"
+                + "-fx-font-size: 13px;"
+                + "-fx-background-radius: 7;"
+                + "-fx-border-color: " + BORDE + ";"
+                + "-fx-border-radius: 7;"
+                + "-fx-padding: 9 10 9 10;"
         );
 
-        btnActualizar.setOnAction(
-                event -> actualizarAtencion()
+        return campo;
+    }
+
+    // Estilo para los ComboBox.
+    private String estiloComboBox() {
+        return "-fx-background-color: " + BLANCO + ";"
+                + "-fx-font-size: 13px;"
+                + "-fx-background-radius: 7;"
+                + "-fx-border-color: " + BORDE + ";"
+                + "-fx-border-radius: 7;"
+                + "-fx-padding: 3;";
+    }
+
+    // Estilo reutilizable para los botones.
+    private void estilizarBoton(
+            Button boton,
+            String colorFondo,
+            String colorHover,
+            String colorTexto) {
+
+        boton.setMinHeight(40);
+        boton.setPrefHeight(42);
+        boton.setPadding(new Insets(10, 15, 10, 15));
+
+        boton.setStyle(
+                "-fx-background-color: " + colorFondo + ";"
+                + "-fx-text-fill: " + colorTexto + ";"
+                + "-fx-font-size: 11px;"
+                + "-fx-font-weight: bold;"
+                + "-fx-background-radius: 8;"
+                + "-fx-border-radius: 8;"
+                + "-fx-cursor: hand;"
         );
 
-        btnFinalizar.setOnAction(
-                event -> finalizarAtencion()
-        );
+        boton.setOnMouseEntered(e -> {
+            if (!boton.isDisabled()) {
+                boton.setStyle(
+                        "-fx-background-color: " + colorHover + ";"
+                        + "-fx-text-fill: " + colorTexto + ";"
+                        + "-fx-font-size: 11px;"
+                        + "-fx-font-weight: bold;"
+                        + "-fx-background-radius: 8;"
+                        + "-fx-border-radius: 8;"
+                        + "-fx-cursor: hand;"
+                );
+            }
+        });
 
-        btnEliminar.setOnAction(
-                event -> eliminarAtencion()
-        );
+        boton.setOnMouseExited(e -> {
+            boton.setStyle(
+                    "-fx-background-color: " + colorFondo + ";"
+                    + "-fx-text-fill: " + colorTexto + ";"
+                    + "-fx-font-size: 11px;"
+                    + "-fx-font-weight: bold;"
+                    + "-fx-background-radius: 8;"
+                    + "-fx-border-radius: 8;"
+                    + "-fx-cursor: hand;"
+            );
+        });
     }
 
     private void cargarAtenciones() {
@@ -311,29 +546,20 @@ public class FrmAtencionMesa extends Application {
     }
 
     private void iniciarAtencion() {
+
         Mesa mesaSeleccionada = cboMesa.getValue();
         Mozo mozoSeleccionado = cboMozo.getValue();
 
         if (mesaSeleccionada == null) {
-
-            mostrarMensaje(
-                    "Aviso",
-                    "Selecciona una mesa"
-            );
-
+            mostrarMensaje("Aviso", "Selecciona una mesa.");
             return;
-
         }
+
         if (mozoSeleccionado == null) {
-
-            mostrarMensaje(
-                    "Aviso",
-                    "Selecciona una mozo"
-            );
-
+            mostrarMensaje("Aviso", "Selecciona un mozo.");
             return;
-
         }
+
         boolean resultado = atencionService.iniciarAtencion(
                 mesaSeleccionada.getId(),
                 mozoSeleccionado.getId()
@@ -342,8 +568,8 @@ public class FrmAtencionMesa extends Application {
         if (resultado) {
 
             mostrarMensaje(
-                    "Exito",
-                    "La atencion se inicio correctamente."
+                    "Éxito",
+                    "La atención se inició correctamente."
             );
 
             cargarMesas();
@@ -354,7 +580,7 @@ public class FrmAtencionMesa extends Application {
         } else {
             mostrarMensaje(
                     "Aviso",
-                    "No se pudo iniciar la atencion."
+                    "No se pudo iniciar la atención."
             );
         }
     }
@@ -364,12 +590,7 @@ public class FrmAtencionMesa extends Application {
         try {
 
             if (txtId.getText().isEmpty()) {
-
-                mostrarMensaje(
-                        "Aviso",
-                        "Selecciona una atención."
-                );
-
+                mostrarMensaje("Aviso", "Selecciona una atención.");
                 return;
             }
 
@@ -377,24 +598,20 @@ public class FrmAtencionMesa extends Application {
             Mozo mozoSeleccionado = cboMozo.getValue();
 
             if (mesaSeleccionada == null || mozoSeleccionado == null) {
-
                 mostrarMensaje(
                         "Aviso",
-                        "Selecciona una mesa y mozo."
+                        "Selecciona una mesa y un mozo."
                 );
-
                 return;
-
             }
 
             int id = Integer.parseInt(txtId.getText());
 
-            boolean resultado
-                    = atencionService.actualizarAtencion(
-                            id,
-                            mesaSeleccionada.getId(),
-                            mozoSeleccionado.getId()
-                    );
+            boolean resultado = atencionService.actualizarAtencion(
+                    id,
+                    mesaSeleccionada.getId(),
+                    mozoSeleccionado.getId()
+            );
 
             if (resultado) {
 
@@ -407,7 +624,6 @@ public class FrmAtencionMesa extends Application {
                 limpiarCampos();
 
             } else {
-
                 mostrarMensaje(
                         "Aviso",
                         "No se pudo actualizar la atención."
@@ -415,7 +631,6 @@ public class FrmAtencionMesa extends Application {
             }
 
         } catch (NumberFormatException e) {
-
             mostrarMensaje(
                     "Error",
                     "Los datos deben ser numéricos."
@@ -426,22 +641,13 @@ public class FrmAtencionMesa extends Application {
     private void finalizarAtencion() {
 
         if (txtId.getText().isEmpty()) {
-
-            mostrarMensaje(
-                    "Aviso",
-                    "Selecciona una atención."
-            );
-
+            mostrarMensaje("Aviso", "Selecciona una atención.");
             return;
         }
 
-        int id
-                = Integer.parseInt(
-                        txtId.getText()
-                );
+        int id = Integer.parseInt(txtId.getText());
 
-        boolean resultado
-                = atencionService.finalizarAtencion(id);
+        boolean resultado = atencionService.finalizarAtencion(id);
 
         if (resultado) {
 
@@ -454,7 +660,6 @@ public class FrmAtencionMesa extends Application {
             limpiarCampos();
 
         } else {
-
             mostrarMensaje(
                     "Aviso",
                     "No se pudo finalizar la atención."
@@ -465,22 +670,13 @@ public class FrmAtencionMesa extends Application {
     private void eliminarAtencion() {
 
         if (txtId.getText().isEmpty()) {
-
-            mostrarMensaje(
-                    "Aviso",
-                    "Selecciona una atención."
-            );
-
+            mostrarMensaje("Aviso", "Selecciona una atención.");
             return;
         }
 
-        int id
-                = Integer.parseInt(
-                        txtId.getText()
-                );
+        int id = Integer.parseInt(txtId.getText());
 
-        boolean resultado
-                = atencionService.eliminarAtencion(id);
+        boolean resultado = atencionService.eliminarAtencion(id);
 
         if (resultado) {
 
@@ -493,7 +689,6 @@ public class FrmAtencionMesa extends Application {
             limpiarCampos();
 
         } else {
-
             mostrarMensaje(
                     "Aviso",
                     "No se puede eliminar esta atención."
@@ -503,31 +698,21 @@ public class FrmAtencionMesa extends Application {
 
     private void limpiarCampos() {
 
-    txtId.clear();
+        txtId.clear();
 
-    cboMesa.getSelectionModel()
-            .clearSelection();
+        cboMesa.getSelectionModel().clearSelection();
+        cboMozo.getSelectionModel().clearSelection();
 
-    cboMozo.getSelectionModel()
-            .clearSelection();
+        txtEstado.clear();
+        txtFechaInicio.clear();
+        txtFechaFin.clear();
 
-    txtEstado.clear();
-    txtFechaInicio.clear();
-    txtFechaFin.clear();
+        tablaAtenciones.getSelectionModel().clearSelection();
+    }
 
-    tablaAtenciones
-            .getSelectionModel()
-            .clearSelection();
-}
+    private void mostrarMensaje(String titulo, String mensaje) {
 
-    private void mostrarMensaje(
-            String titulo,
-            String mensaje) {
-
-        Alert alerta
-                = new Alert(
-                        Alert.AlertType.INFORMATION
-                );
+        Alert alerta = new Alert(Alert.AlertType.INFORMATION);
 
         alerta.setTitle(titulo);
         alerta.setHeaderText(null);
@@ -535,7 +720,7 @@ public class FrmAtencionMesa extends Application {
 
         alerta.showAndWait();
     }
-    
+
     public void mostrar() {
         Stage nuevaVentana = new Stage();
         start(nuevaVentana);
@@ -547,58 +732,55 @@ public class FrmAtencionMesa extends Application {
 
     private void seleccionarMesa(int mesaId) {
 
-        Mesa mesaEcontrada = null;
+        Mesa mesaEncontrada = null;
 
         for (Mesa mesa : cboMesa.getItems()) {
-
             if (mesa.getId() == mesaId) {
-
-                mesaEcontrada = mesa;
+                mesaEncontrada = mesa;
                 break;
             }
         }
-        
-        if(mesaEcontrada == null){
+
+        if (mesaEncontrada == null) {
             Mesa mesa = atencionService.buscarMesa(mesaId);
-            if(mesa !=null){
-                mesaEcontrada = mesa;
+
+            if (mesa != null) {
+                mesaEncontrada = mesa;
                 cboMesa.getItems().add(mesa);
-                
             }
         }
-        
-        if(mesaEcontrada != null){
-            cboMesa.setValue(mesaEcontrada);
+
+        if (mesaEncontrada != null) {
+            cboMesa.setValue(mesaEncontrada);
         }
     }
 
     private void seleccionarMozo(int mozoId) {
+
         for (Mozo mozo : cboMozo.getItems()) {
-
-        if (mozo.getId() == mozoId) {
-
-            cboMozo.setValue(mozo);
-            break;
+            if (mozo.getId() == mozoId) {
+                cboMozo.setValue(mozo);
+                break;
+            }
         }
-    }
     }
 
     private void cargarMesas() {
-        ObservableList<Mesa> listaMesas =
-            FXCollections.observableArrayList();
-                    
-            for(Mesa mesa : atencionService.listarMesas()){
-                if(mesa.estaDisponible()){
-                    listaMesas.add(mesa);
-                }
-            }
-            
-            cboMesa.setItems(listaMesas);
 
-    cboMesa.setItems(listaMesas);
+        ObservableList<Mesa> listaMesas
+                = FXCollections.observableArrayList();
+
+        for (Mesa mesa : atencionService.listarMesas()) {
+            if (mesa.estaDisponible()) {
+                listaMesas.add(mesa);
+            }
+        }
+
+        cboMesa.setItems(listaMesas);
     }
 
     private void cargarMozos() {
+
         ObservableList<Mozo> listaMozos
                 = FXCollections.observableArrayList(
                         mozoDAO.listar()

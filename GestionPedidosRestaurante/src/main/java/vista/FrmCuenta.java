@@ -8,129 +8,217 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-//quitar -sergio
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+import javafx.print.PrinterJob;
 
 import modelo.Cuenta;
-import service.CuentaService;
-
-// AGREGA -SERGIO
-import controlador.DetallePedidoDAO;
-import javafx.print.PrinterJob;
-import javafx.scene.Node;
-import javafx.scene.Scene;
-import javafx.scene.control.TextArea;
-import javafx.stage.Stage;
 import modelo.DetallePedido;
+import service.CuentaService;
+import controlador.DetallePedidoDAO;
 
 public class FrmCuenta extends BorderPane {
 
     private final CuentaService cuentaService;
-
     private final TableView<Cuenta> tablaCuentas;
-
     private final TextField txtSubtotal;
     private final TextField txtIGV;
     private final TextField txtTotal;
-    private final DetallePedidoDAO detallePedidoDAO; //AGREGADO-SERGIO
+    private final DetallePedidoDAO detallePedidoDAO;
 
-//quitar -sergio
+    // Paleta visual
+    private final String VERDE = "#285943";
+    private final String VERDE_HOVER = "#1D4432";
+    private final String FONDO = "#F3F6F4";
+    private final String BORDE = "#DCE5DF";
+    private final String TEXTO = "#26352C";
+
     public FrmCuenta() {
         cuentaService = new CuentaService();
-        detallePedidoDAO = new DetallePedidoDAO(); //AGREGADO-SERGIO
+        detallePedidoDAO = new DetallePedidoDAO();
 
         tablaCuentas = new TableView<>();
         txtSubtotal = new TextField();
         txtIGV = new TextField();
         txtTotal = new TextField();
 
-        //quitar-sergio
         configurarFormulario();
         configurarTablas();
         cargarDatos();
     }
 
+    // ==========================================
+    // FORMULARIO PRINCIPAL
+    // ==========================================
     private void configurarFormulario() {
-        setPadding(new Insets(15));
+
+        setPadding(new Insets(24));
+        setStyle("-fx-background-color: " + FONDO + ";");
 
         Label titulo = new Label("GESTIÓN DE CUENTAS");
         titulo.setStyle(
-                "-fx-font-size: 22px; -fx-font-weight: bold;"
+                "-fx-font-size: 26px;"
+                + "-fx-font-weight: bold;"
+                + "-fx-text-fill: " + VERDE + ";"
+                + "-fx-font-family: 'Segoe UI';"
         );
 
-        Label lblCuentas = new Label("Cuentas registradas");
-        lblCuentas.setStyle("-fx-font-weight: bold;");
+        Label subtitulo = new Label(
+                "Consulta los importes, revisa los pedidos "
+                + "y administra los pagos"
+        );
+        subtitulo.setStyle(
+                "-fx-font-size: 13px;"
+                + "-fx-text-fill: #718078;"
+                + "-fx-font-family: 'Segoe UI';"
+        );
 
-        Button btnActualizar = new Button("Actualizar");
+        VBox encabezado = new VBox(6, titulo, subtitulo);
+        encabezado.setPadding(new Insets(0, 0, 6, 0));
+
+        // Encabezado de la tabla
+        Label lblCuentas = new Label("Cuentas registradas");
+        lblCuentas.setStyle(
+                "-fx-font-size: 17px;"
+                + "-fx-font-weight: bold;"
+                + "-fx-text-fill: " + TEXTO + ";"
+                + "-fx-font-family: 'Segoe UI';"
+        );
+
+        Button btnActualizar = new Button("ACTUALIZAR LISTADO");
+        estilizarBoton(btnActualizar, VERDE, VERDE_HOVER);
         btnActualizar.setOnAction(e -> cargarDatos());
 
         HBox encabezadoCuentas = new HBox(
-                15, lblCuentas, btnActualizar
+                12, lblCuentas, btnActualizar
         );
+        encabezadoCuentas.setAlignment(Pos.CENTER_LEFT);
 
+        // ======================================
+        // IMPORTES
+        // ======================================
         txtSubtotal.setEditable(false);
         txtIGV.setEditable(false);
         txtTotal.setEditable(false);
 
-        GridPane importes = new GridPane();
-        importes.setHgap(10);
-        importes.setVgap(8);
+        estilizarImporte(txtSubtotal);
+        estilizarImporte(txtIGV);
+        estilizarImporte(txtTotal);
 
-        importes.add(new Label("Subtotal:"), 0, 0);
+        Label lblSubtotal = crearEtiqueta("Subtotal (S/):");
+        Label lblIGV = crearEtiqueta("IGV (18 %):");
+        Label lblTotal = crearEtiqueta("Total (S/):");
+
+        GridPane importes = new GridPane();
+        importes.setHgap(14);
+        importes.setVgap(12);
+        importes.setPadding(new Insets(16));
+        importes.setAlignment(Pos.CENTER_LEFT);
+
+        importes.add(lblSubtotal, 0, 0);
         importes.add(txtSubtotal, 1, 0);
 
-        importes.add(new Label("IGV (18 %):"), 0, 1);
+        importes.add(lblIGV, 0, 1);
         importes.add(txtIGV, 1, 1);
 
-        importes.add(new Label("Total:"), 0, 2);
+        importes.add(lblTotal, 0, 2);
         importes.add(txtTotal, 1, 2);
 
-        //quitar - sergio
+        txtSubtotal.setMaxWidth(Double.MAX_VALUE);
+        txtIGV.setMaxWidth(Double.MAX_VALUE);
+        txtTotal.setMaxWidth(Double.MAX_VALUE);
+
+        GridPane.setHgrow(
+                txtSubtotal,
+                javafx.scene.layout.Priority.ALWAYS
+        );
+        GridPane.setHgrow(
+                txtIGV,
+                javafx.scene.layout.Priority.ALWAYS
+        );
+        GridPane.setHgrow(
+                txtTotal,
+                javafx.scene.layout.Priority.ALWAYS
+        );
+
+        // Resaltar el total
+        txtTotal.setStyle(
+                "-fx-background-color: #E8F1EB;"
+                + "-fx-border-color: #C5D9CB;"
+                + "-fx-border-radius: 7;"
+                + "-fx-background-radius: 7;"
+                + "-fx-padding: 9 12 9 12;"
+                + "-fx-font-size: 15px;"
+                + "-fx-font-weight: bold;"
+                + "-fx-text-fill: " + VERDE + ";"
+                + "-fx-font-family: 'Segoe UI';"
+        );
+
+        // ======================================
+        // BOTONES DE ACCIÓN
+        // ======================================
         Button btnVerDetalle = new Button("VER DETALLE");
         Button btnImprimir = new Button("IMPRIMIR CUENTA");
         Button btnRegistrarPago = new Button("REGISTRAR PAGO");
+
+        estilizarBoton(btnVerDetalle, "#39765A", "#2C6047");
+        estilizarBoton(btnImprimir, "#64756B", "#526158");
+        estilizarBoton(btnRegistrarPago, VERDE, VERDE_HOVER);
 
         btnVerDetalle.setOnAction(e -> verDetalleCuenta());
         btnImprimir.setOnAction(e -> imprimirCuenta());
         btnRegistrarPago.setOnAction(e -> abrirRegistroPago());
 
         HBox panelAcciones = new HBox(
-                10,
+                12,
                 btnVerDetalle,
                 btnImprimir,
                 btnRegistrarPago
         );
+        panelAcciones.setAlignment(Pos.CENTER_LEFT);
+        panelAcciones.setPadding(new Insets(5, 0, 0, 0));
 
-        panelAcciones.setPadding(new Insets(10));
-        
+        // ======================================
+        // PANELES
+        // ======================================
         VBox panelCuentas = new VBox(
-                10,
+                15,
                 encabezadoCuentas,
                 tablaCuentas,
                 importes,
                 panelAcciones
         );
 
-        VBox contenido = new VBox(
-                18,
-                titulo,
-                panelCuentas
+        panelCuentas.setPadding(new Insets(20));
+        panelCuentas.setStyle(
+                "-fx-background-color: white;"
+                + "-fx-background-radius: 12;"
+                + "-fx-border-color: " + BORDE + ";"
+                + "-fx-border-radius: 12;"
         );
 
-        contenido.setPadding(new Insets(10));
+        VBox contenido = new VBox(18, encabezado, panelCuentas);
+        contenido.setPadding(new Insets(4));
 
         setCenter(contenido);
     }
 
+    // ==========================================
+    // CONFIGURACIÓN DE LA TABLA
+    // ==========================================
     private void configurarTablas() {
 
         TableColumn<Cuenta, Integer> colCuentaId
@@ -152,7 +240,7 @@ public class FrmCuenta extends BorderPane {
         );
 
         TableColumn<Cuenta, BigDecimal> colSubtotal
-                = new TableColumn<>("Subtotal");
+                = new TableColumn<>("Subtotal (S/)");
 
         colSubtotal.setCellValueFactory(
                 celda -> new SimpleObjectProperty<>(
@@ -161,7 +249,7 @@ public class FrmCuenta extends BorderPane {
         );
 
         TableColumn<Cuenta, BigDecimal> colIGV
-                = new TableColumn<>("IGV");
+                = new TableColumn<>("IGV (S/)");
 
         colIGV.setCellValueFactory(
                 celda -> new SimpleObjectProperty<>(
@@ -170,7 +258,7 @@ public class FrmCuenta extends BorderPane {
         );
 
         TableColumn<Cuenta, BigDecimal> colTotal
-                = new TableColumn<>("Total");
+                = new TableColumn<>("Total (S/)");
 
         colTotal.setCellValueFactory(
                 celda -> new SimpleObjectProperty<>(
@@ -212,8 +300,23 @@ public class FrmCuenta extends BorderPane {
                 TableView.CONSTRAINED_RESIZE_POLICY
         );
 
-        tablaCuentas.setPrefHeight(300);
+        tablaCuentas.setPrefHeight(320);
+        tablaCuentas.setMinHeight(220);
 
+        tablaCuentas.setPlaceholder(
+                new Label("No hay cuentas registradas.")
+        );
+
+        tablaCuentas.setStyle(
+                "-fx-background-color: white;"
+                + "-fx-background-radius: 8;"
+                + "-fx-border-color: " + BORDE + ";"
+                + "-fx-border-radius: 8;"
+                + "-fx-font-family: 'Segoe UI';"
+                + "-fx-font-size: 12px;"
+        );
+
+        // Mostrar importes de la cuenta seleccionada
         tablaCuentas.getSelectionModel()
                 .selectedItemProperty()
                 .addListener((obs, anterior, cuenta) -> {
@@ -225,10 +328,78 @@ public class FrmCuenta extends BorderPane {
                 });
     }
 
+    // ==========================================
+    // ESTILOS AUXILIARES
+    // ==========================================
+    private Label crearEtiqueta(String texto) {
+        Label etiqueta = new Label(texto);
+        etiqueta.setStyle(
+                "-fx-font-size: 13px;"
+                + "-fx-font-weight: bold;"
+                + "-fx-text-fill: " + TEXTO + ";"
+                + "-fx-font-family: 'Segoe UI';"
+        );
+        return etiqueta;
+    }
+
+    private void estilizarImporte(TextField campo) {
+        campo.setPrefHeight(38);
+        campo.setStyle(
+                "-fx-background-color: #F5F8F6;"
+                + "-fx-border-color: " + BORDE + ";"
+                + "-fx-border-radius: 7;"
+                + "-fx-background-radius: 7;"
+                + "-fx-padding: 9 12 9 12;"
+                + "-fx-font-size: 13px;"
+                + "-fx-text-fill: " + TEXTO + ";"
+                + "-fx-font-family: 'Segoe UI';"
+        );
+    }
+
+    private void estilizarBoton(
+            Button boton,
+            String color,
+            String colorHover) {
+
+        boton.setPrefHeight(38);
+        boton.setMinWidth(125);
+
+        String estiloBase
+                = "-fx-background-color: " + color + ";"
+                + "-fx-text-fill: white;"
+                + "-fx-font-size: 11px;"
+                + "-fx-font-weight: bold;"
+                + "-fx-font-family: 'Segoe UI';"
+                + "-fx-background-radius: 7;"
+                + "-fx-padding: 9 14 9 14;"
+                + "-fx-cursor: hand;";
+
+        boton.setStyle(estiloBase);
+
+        boton.setOnMouseEntered(e
+                -> boton.setStyle(
+                        "-fx-background-color: " + colorHover + ";"
+                        + "-fx-text-fill: white;"
+                        + "-fx-font-size: 11px;"
+                        + "-fx-font-weight: bold;"
+                        + "-fx-font-family: 'Segoe UI';"
+                        + "-fx-background-radius: 7;"
+                        + "-fx-padding: 9 14 9 14;"
+                        + "-fx-cursor: hand;"
+                )
+        );
+
+        boton.setOnMouseExited(e
+                -> boton.setStyle(estiloBase)
+        );
+    }
+
+    // ==========================================
+    // CARGAR DATOS
+    // ==========================================
     private void cargarDatos() {
         try {
-            List<Cuenta> cuentas
-                    = cuentaService.listarCuentas();
+            List<Cuenta> cuentas = cuentaService.listarCuentas();
 
             tablaCuentas.setItems(
                     FXCollections.observableArrayList(cuentas)
@@ -244,7 +415,6 @@ public class FrmCuenta extends BorderPane {
         }
     }
 
-    //ELIMIAR -SERGIO
     private void mostrarImportes(Cuenta cuenta) {
         txtSubtotal.setText(
                 cuenta.getSubTotal().toPlainString()
@@ -265,244 +435,263 @@ public class FrmCuenta extends BorderPane {
         txtTotal.clear();
     }
 
+    // ==========================================
+    // MENSAJES
+    // ==========================================
     private void mostrarInformacion(String mensaje) {
-        Alert alerta = new Alert(
-                Alert.AlertType.INFORMATION
-        );
+        Alert alerta = new Alert(Alert.AlertType.INFORMATION);
 
         alerta.setTitle("Gestión de cuentas");
         alerta.setHeaderText(null);
         alerta.setContentText(mensaje);
+
         alerta.showAndWait();
     }
 
     private void mostrarAdvertencia(String mensaje) {
-        Alert alerta = new Alert(
-                Alert.AlertType.WARNING
-        );
+        Alert alerta = new Alert(Alert.AlertType.WARNING);
 
         alerta.setTitle("Gestión de cuentas");
         alerta.setHeaderText(null);
         alerta.setContentText(mensaje);
+
         alerta.showAndWait();
     }
 
     private void mostrarError(String mensaje) {
-        Alert alerta = new Alert(
-                Alert.AlertType.ERROR
-        );
+        Alert alerta = new Alert(Alert.AlertType.ERROR);
 
         alerta.setTitle("Gestión de cuentas");
         alerta.setHeaderText("Ocurrió un problema");
         alerta.setContentText(mensaje);
+
         alerta.showAndWait();
     }
 
+    // ==========================================
+    // VER DETALLE DE CUENTA
+    // ==========================================
     private void verDetalleCuenta() {
-    Cuenta cuenta = tablaCuentas.getSelectionModel()
-            .getSelectedItem();
 
-    if (cuenta == null) {
-        mostrarAdvertencia("Seleccione una cuenta para ver su detalle.");
-        return;
-    }
+        Cuenta cuenta = tablaCuentas.getSelectionModel()
+                .getSelectedItem();
 
-    try {
-        List<DetallePedido> detalles =
-                detallePedidoDAO.listarPorPedido(cuenta.getPedidoId());
-
-        StringBuilder contenido = new StringBuilder();
-
-        contenido.append("DETALLE DE CUENTA\n");
-        contenido.append("==============================\n");
-        contenido.append("Cuenta: ").append(cuenta.getId()).append("\n");
-        contenido.append("Pedido: ").append(cuenta.getPedidoId()).append("\n");
-        contenido.append("Estado: ").append(cuenta.getEstado()).append("\n\n");
-
-        contenido.append(String.format(
-                "%-22s %5s %10s %10s%n",
-                "PLATO", "CANT.", "PRECIO", "IMPORTE"
-        ));
-
-        contenido.append("-----------------------------------------------\n");
-
-        for (DetallePedido detalle : detalles) {
-            String nombre = detalle.getPlato().getNombre();
-
-            contenido.append(String.format(
-                    "%-22s %5d %10.2f %10.2f%n",
-                    nombre.length() > 22
-                            ? nombre.substring(0, 22)
-                            : nombre,
-                    detalle.getCantidad(),
-                    detalle.getPrecioUnitario(),
-                    detalle.getSubTotal()
-            ));
-        }
-
-        contenido.append("\n");
-        contenido.append("Subtotal: S/ ")
-                .append(cuenta.getSubTotal()).append("\n");
-        contenido.append("IGV (18%): S/ ")
-                .append(cuenta.getIGV()).append("\n");
-        contenido.append("TOTAL: S/ ")
-                .append(cuenta.getTotal()).append("\n");
-
-        TextArea area = new TextArea(contenido.toString());
-        area.setEditable(false);
-        area.setWrapText(false);
-        area.setPrefColumnCount(65);
-        area.setPrefRowCount(20);
-
-        Alert dialogo = new Alert(Alert.AlertType.INFORMATION);
-        dialogo.setTitle("Detalle de cuenta");
-        dialogo.setHeaderText("Cuenta N.º " + cuenta.getId());
-        dialogo.getDialogPane().setContent(area);
-        dialogo.getDialogPane().setPrefWidth(650);
-        dialogo.showAndWait();
-
-    } catch (SQLException ex) {
-        mostrarError(
-                "No se pudo consultar el detalle de la cuenta: "
-                + ex.getMessage()
-        );
-    }
-}
-
-    private void imprimirCuenta() {
-    Cuenta cuenta = tablaCuentas.getSelectionModel()
-            .getSelectedItem();
-
-    if (cuenta == null) {
-        mostrarAdvertencia("Seleccione una cuenta para imprimir.");
-        return;
-    }
-
-    try {
-        List<DetallePedido> detalles =
-                detallePedidoDAO.listarPorPedido(cuenta.getPedidoId());
-
-        VBox ticket = new VBox(8);
-        ticket.setPadding(new Insets(20));
-        ticket.setPrefWidth(350);
-
-        ticket.getChildren().addAll(
-                new javafx.scene.control.Label(
-                        "SISTEMA DE GESTIÓN DE RESTAURANTE"
-                ),
-                new javafx.scene.control.Label(
-                        "COMPROBANTE DE CUENTA"
-                ),
-                new javafx.scene.control.Label(
-                        "Cuenta: " + cuenta.getId()
-                ),
-                new javafx.scene.control.Label(
-                        "Pedido: " + cuenta.getPedidoId()
-                ),
-                new javafx.scene.control.Label(
-                        "Estado: " + cuenta.getEstado()
-                ),
-                new javafx.scene.control.Label(
-                        "--------------------------------"
-                )
-        );
-
-        for (DetallePedido detalle : detalles) {
-            String linea = detalle.getPlato().getNombre()
-                    + " x " + detalle.getCantidad()
-                    + " = S/ "
-                    + String.format("%.2f", detalle.getSubTotal());
-
-            ticket.getChildren().add(
-                    new javafx.scene.control.Label(linea)
+        if (cuenta == null) {
+            mostrarAdvertencia(
+                    "Seleccione una cuenta para ver su detalle."
             );
-        }
-
-        ticket.getChildren().addAll(
-                new javafx.scene.control.Label(
-                        "--------------------------------"
-                ),
-                new javafx.scene.control.Label(
-                        "Subtotal: S/ " + cuenta.getSubTotal()
-                ),
-                new javafx.scene.control.Label(
-                        "IGV: S/ " + cuenta.getIGV()
-                ),
-                new javafx.scene.control.Label(
-                        "TOTAL: S/ " + cuenta.getTotal()
-                ),
-                new javafx.scene.control.Label(
-                        "Documento informativo. No acredita pago."
-                )
-        );
-
-        PrinterJob trabajo = PrinterJob.createPrinterJob();
-
-        if (trabajo == null) {
-            mostrarError("No hay una impresora disponible.");
             return;
         }
 
-        Stage ventana = new Stage();
+        try {
+            List<DetallePedido> detalles
+                    = detallePedidoDAO.listarPorPedido(
+                            cuenta.getPedidoId()
+                    );
 
-        boolean aceptarImpresion =
-                trabajo.showPrintDialog(ventana);
+            StringBuilder contenido = new StringBuilder();
 
-        if (aceptarImpresion) {
-            boolean impreso = trabajo.printPage(ticket);
+            contenido.append("DETALLE DE CUENTA\n");
+            contenido.append("==============================\n");
+            contenido.append("Cuenta: ")
+                    .append(cuenta.getId()).append("\n");
+            contenido.append("Pedido: ")
+                    .append(cuenta.getPedidoId()).append("\n");
+            contenido.append("Estado: ")
+                    .append(cuenta.getEstado()).append("\n\n");
 
-            if (impreso) {
-                trabajo.endJob();
-                mostrarInformacion(
-                        "Se envió la cuenta a la impresora."
-                );
-            } else {
-                trabajo.cancelJob();
-                mostrarError("No se pudo imprimir la cuenta.");
+            contenido.append(String.format(
+                    "%-22s %5s %10s %10s%n",
+                    "PLATO", "CANT.", "PRECIO", "IMPORTE"
+            ));
+
+            contenido.append(
+                    "-----------------------------------------------\n"
+            );
+
+            for (DetallePedido detalle : detalles) {
+                String nombre = detalle.getPlato().getNombre();
+
+                contenido.append(String.format(
+                        "%-22s %5d %10.2f %10.2f%n",
+                        nombre.length() > 22
+                        ? nombre.substring(0, 22)
+                        : nombre,
+                        detalle.getCantidad(),
+                        detalle.getPrecioUnitario(),
+                        detalle.getSubTotal()
+                ));
             }
-        } else {
-            trabajo.cancelJob();
+
+            contenido.append("\n");
+            contenido.append("Subtotal: S/ ")
+                    .append(cuenta.getSubTotal()).append("\n");
+            contenido.append("IGV (18%): S/ ")
+                    .append(cuenta.getIGV()).append("\n");
+            contenido.append("TOTAL: S/ ")
+                    .append(cuenta.getTotal()).append("\n");
+
+            TextArea area = new TextArea(contenido.toString());
+            area.setEditable(false);
+            area.setWrapText(false);
+            area.setPrefColumnCount(65);
+            area.setPrefRowCount(20);
+            area.setStyle(
+                    "-fx-font-family: 'Consolas';"
+                    + "-fx-font-size: 12px;"
+                    + "-fx-control-inner-background: #F8FAF8;"
+                    + "-fx-text-fill: " + TEXTO + ";"
+            );
+
+            Alert dialogo = new Alert(Alert.AlertType.INFORMATION);
+            dialogo.setTitle("Detalle de cuenta");
+            dialogo.setHeaderText("Cuenta N.º " + cuenta.getId());
+            dialogo.getDialogPane().setContent(area);
+            dialogo.getDialogPane().setPrefWidth(650);
+            dialogo.showAndWait();
+
+        } catch (SQLException ex) {
+            mostrarError(
+                    "No se pudo consultar el detalle de la cuenta: "
+                    + ex.getMessage()
+            );
+        }
+    }
+
+    // ==========================================
+    // IMPRIMIR CUENTA
+    // ==========================================
+    private void imprimirCuenta() {
+
+        Cuenta cuenta = tablaCuentas.getSelectionModel()
+                .getSelectedItem();
+
+        if (cuenta == null) {
+            mostrarAdvertencia(
+                    "Seleccione una cuenta para imprimir."
+            );
+            return;
         }
 
-    } catch (SQLException ex) {
-        mostrarError(
-                "No se pudo preparar la cuenta para imprimir: "
-                + ex.getMessage()
-        );
+        try {
+            List<DetallePedido> detalles
+                    = detallePedidoDAO.listarPorPedido(
+                            cuenta.getPedidoId()
+                    );
+
+            VBox ticket = new VBox(8);
+            ticket.setPadding(new Insets(20));
+            ticket.setPrefWidth(350);
+            ticket.setStyle(
+                    "-fx-background-color: white;"
+                    + "-fx-font-family: 'Consolas';"
+                    + "-fx-font-size: 12px;"
+            );
+
+            ticket.getChildren().addAll(
+                    new Label(
+                            "SISTEMA DE GESTIÓN DE RESTAURANTE"
+                    ),
+                    new Label("COMPROBANTE DE CUENTA"),
+                    new Label("Cuenta: " + cuenta.getId()),
+                    new Label("Pedido: " + cuenta.getPedidoId()),
+                    new Label("Estado: " + cuenta.getEstado()),
+                    new Label("--------------------------------")
+            );
+
+            for (DetallePedido detalle : detalles) {
+                String linea = detalle.getPlato().getNombre()
+                        + " x " + detalle.getCantidad()
+                        + " = S/ "
+                        + String.format("%.2f", detalle.getSubTotal());
+
+                ticket.getChildren().add(new Label(linea));
+            }
+
+            ticket.getChildren().addAll(
+                    new Label("--------------------------------"),
+                    new Label(
+                            "Subtotal: S/ " + cuenta.getSubTotal()
+                    ),
+                    new Label(
+                            "IGV: S/ " + cuenta.getIGV()
+                    ),
+                    new Label(
+                            "TOTAL: S/ " + cuenta.getTotal()
+                    ),
+                    new Label(
+                            "Documento informativo. No acredita pago."
+                    )
+            );
+
+            PrinterJob trabajo = PrinterJob.createPrinterJob();
+
+            if (trabajo == null) {
+                mostrarError("No hay una impresora disponible.");
+                return;
+            }
+
+            Stage ventana = new Stage();
+
+            boolean aceptarImpresion
+                    = trabajo.showPrintDialog(ventana);
+
+            if (aceptarImpresion) {
+                boolean impreso = trabajo.printPage(ticket);
+
+                if (impreso) {
+                    trabajo.endJob();
+                    mostrarInformacion(
+                            "Se envió la cuenta a la impresora."
+                    );
+                } else {
+                    trabajo.cancelJob();
+                    mostrarError("No se pudo imprimir la cuenta.");
+                }
+            } else {
+                trabajo.cancelJob();
+            }
+
+        } catch (SQLException ex) {
+            mostrarError(
+                    "No se pudo preparar la cuenta para imprimir: "
+                    + ex.getMessage()
+            );
+        }
     }
-}
 
-    // MODIFICADO-SEGIO
-    
-private void abrirRegistroPago() {
-    Cuenta cuentaSeleccionada =
-            tablaCuentas.getSelectionModel().getSelectedItem();
+    // ==========================================
+    // REGISTRAR PAGO
+    // ==========================================
+    private void abrirRegistroPago() {
 
-    if (cuentaSeleccionada == null) {
-        mostrarAdvertencia(
-            "Selecciona una cuenta para registrar el pago."
-        );
-        return;
+        Cuenta cuentaSeleccionada
+                = tablaCuentas.getSelectionModel().getSelectedItem();
+
+        if (cuentaSeleccionada == null) {
+            mostrarAdvertencia(
+                    "Selecciona una cuenta para registrar el pago."
+            );
+            return;
+        }
+
+        if (!"PENDIENTE".equalsIgnoreCase(
+                cuentaSeleccionada.getEstado())) {
+
+            mostrarAdvertencia(
+                    "Solo puedes registrar el pago de una cuenta pendiente."
+            );
+            return;
+        }
+
+        FrmRegistroPago formulario
+                = new FrmRegistroPago(cuentaSeleccionada);
+
+        Stage ventana = new Stage();
+        ventana.setTitle("Registro de Pago");
+        ventana.setScene(new Scene(formulario, 620, 500));
+        ventana.showAndWait();
+
+        cargarDatos();
     }
-
-    if (!"PENDIENTE".equalsIgnoreCase(
-            cuentaSeleccionada.getEstado())) {
-        mostrarAdvertencia(
-            "Solo puedes registrar el pago de una cuenta pendiente."
-        );
-        return;
-    }
-
-    FrmRegistroPago formulario =
-            new FrmRegistroPago(cuentaSeleccionada);
-
-    Stage ventana = new Stage();
-    ventana.setTitle("Registro de Pago");
-    ventana.setScene(new Scene(formulario, 620, 500));
-    ventana.showAndWait();
-
-    cargarDatos();
-}
-
-
 }

@@ -13,6 +13,11 @@ import modelo.Mozo;
 import modelo.Pedido;
 import modelo.Plato;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import utilitarios.ConexionMySQL;
+
 public class PedidoService {
 
     private final PedidoDAO pedidoDAO;
@@ -398,17 +403,194 @@ public class PedidoService {
     }
 
     //CerrarPedido
-    public void cerrarPedido(Pedido pedido) throws SQLException {
-        if (pedido == null) {
-            throw new IllegalArgumentException("El pedido no existe.");
-        }
-        if (!"ENTREGADO".equals(pedido.getEstado())) {
-            throw new IllegalStateException("El pedido debe estar entregado antes de cerrarlo.");
-        }
-        pedido.cerrarPedido();
-        pedidoDAO.actualizar(pedido);
+   
+public void cerrarPedido(Pedido pedido) throws SQLException {
+    if (pedido == null) {
+        throw new IllegalArgumentException(
+            "El pedido no existe."
+        );
     }
 
+    cerrarPedido(pedido.getId());
+}
+
+public void cerrarPedido(int pedidoId) throws SQLException {
+
+    String sqlBuscar = """
+        SELECT p.estado, p.mesa_id,
+               c.id AS cuenta_id,
+               c.estado AS estado_cuenta
+        FROM Pedido p
+        INNER JOIN Cuenta c ON c.pedido_id = p.id
+        WHERE p.id = ?
+        FOR UPDATE
+        """;
+
+    try (Connection conexion =
+            ConexionMySQL.obtenerConexion()) {
+
+        boolean autoCommitOriginal = conexion.getAutoCommit();
+        conexion.setAutoCommit(false);
+
+        try {
+            int mesaId;
+            int cuentaId;
+
+            // 1. Buscar y bloquear el pedido y su cuenta.
+            try (PreparedStatement ps =
+                    conexion.prepareStatement(sqlBuscar)) {
+
+                ps.setInt(1, pedidoId);
+
+                try (ResultSet rs = ps.executeQuery()) {
+
+                    if (!rs.next()) {
+                        throw new IllegalStateException(
+                            "No existe el pedido o no tiene una cuenta."
+                        );
+                    }
+
+                    String estadoPedido =
+                        rs.getString("estado");
+
+                    String estadoCuenta =
+                        rs.getString("estado_cuenta");
+
+                    if (!"ENTREGADO".equalsIgnoreCase(
+                            estadoPedido)) {
+                        throw new IllegalStateException(
+                            "Solo se puede cerrar un pedido entregado."
+                        );
+                    }
+
+                    if (!"PAGADO".equalsIgnoreCase(
+                            estadoCuenta)) {
+                        throw new IllegalStateException(
+                            "La cuenta debe estar pagada antes del cierre."
+                        );
+                    }
+
+                    mesaId = rs.getInt("mesa_id");
+                    cuentaId = rs.getInt("cuenta_id");
+                }
+            }
+
+            // 2. Cambiar el pedido a FINALIZADO.
+            String sqlPedido = """
+                UPDATE Pedido
+                SET estado = 'FINALIZADO'
+                WHERE id = ? AND estado = 'ENTREGADO'
+                """;
+
+            try (PreparedStatement ps =
+                    conexion.prepareStatement(sqlPedido)) {
+
+                ps.setInt(1, pedidoId);
+
+                if (ps.executeUpdate() != 1) {
+                    throw new SQLException(
+                        "No se pudo finalizar el pedido."
+                    );
+                }
+            }
+
+            // 3. Cambiar la cuenta a FINALIZADA.
+            String sqlCuenta = """
+                UPDATE Cuenta
+                SET estado = 'FINALIZADA'
+                WHERE id = ? AND estado = 'PAGADO'
+                """;
+
+            try (PreparedStatement ps =
+                    conexion.prepareStatement(sqlCuenta)) {
+
+                ps.setInt(1, cuentaId);
+
+                if (ps.executeUpdate() != 1) {
+                    throw new SQLException(
+                        "No se pudo finalizar la cuenta."
+                    );
+                }
+            }
+
+            // 4. Comprobar si quedan pedidos sin finalizar
+            // asociados a la misma mesa.
+            String sqlPendientes = """
+                SELECT COUNT(*)
+                FROM Pedido
+                WHERE mesa_id = ?
+                  AND id <> ?
+                  AND estado <> 'FINALIZADO'
+                """;
+
+            int pedidosPendientes;
+
+            try (PreparedStatement ps =
+                    conexion.prepareStatement(sqlPendientes)) {
+
+                ps.setInt(1, mesaId);
+                ps.setInt(2, pedidoId);
+
+                try (ResultSet rs = ps.executeQuery()) {
+                    rs.next();
+                    pedidosPendientes = rs.getInt(1);
+                }
+            }
+
+            // 5. Si no quedan otros pedidos activos,
+            // finalizar la atención y liberar la mesa.
+            if (pedidosPendientes == 0) {
+
+                String sqlAtencion = """
+                    UPDATE AtencionMesa
+                    SET estado = 'FINALIZADA',
+                        fecha_fin = CURRENT_TIMESTAMP
+                    WHERE mesa_id = ?
+                      AND estado = 'ACTIVA'
+                    """;
+
+                try (PreparedStatement ps =
+                        conexion.prepareStatement(sqlAtencion)) {
+
+                    ps.setInt(1, mesaId);
+                    ps.executeUpdate();
+                }
+
+                String sqlMesa = """
+                    UPDATE Mesa
+                    SET estado = 'DISPONIBLE'
+                    WHERE id = ?
+                    """;
+
+                try (PreparedStatement ps =
+                        conexion.prepareStatement(sqlMesa)) {
+
+                    ps.setInt(1, mesaId);
+                    ps.executeUpdate();
+                }
+            }
+
+            // 6. Confirmar todos los cambios.
+            conexion.commit();
+
+        } catch (SQLException | RuntimeException e) {
+
+            // Si algo falla, revertir los cambios.
+            try {
+                conexion.rollback();
+            } catch (SQLException errorRollback) {
+                e.addSuppressed(errorRollback);
+            }
+
+            throw e;
+
+        } finally {
+            conexion.setAutoCommit(autoCommitOriginal);
+        }
+    }
+}
+
+    
     public void enviarPlatoACocina(DetallePedido detalle)
             throws SQLException {
 
