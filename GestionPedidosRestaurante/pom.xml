@@ -46,13 +46,15 @@
             <version>0.0.8</version>
             <configuration>
                 <!-- Clase principal de tu aplicación -->
-                <mainClass>vista.FrmAtencionMesa</mainClass>
-                <!--<mainClass>vista.FrmAtencionMesa</mainClass> -->
-                <!--<mainClass>vista.FrmMesa</mainClass> -->
+                <!-- <mainClass>vista.FrmMesa</mainClass> -->
+                <mainClass>vista.MainApp</mainClass>
+
             </configuration>
         </plugin>
     </plugins>
     </build>
+    <name>GestionPedidosRestaurante</name>
+    
 
     
 </project>

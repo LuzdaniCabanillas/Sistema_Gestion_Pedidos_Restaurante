@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="1408cd96-0e24-4d8f-9693-18a24b745ca1" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/Platos/chaufa_chancho.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/Platos/chaufa_chijaukay.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/Platos/chaufa_pollo.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/Platos/chaufa_pollo_enrollado.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/Platos/chaufa_pollo_pina.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/Platos/chaufa_pollo_tausi.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/Platos/combinado_pollo.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/Platos/lomo_saltado.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/Platos/tallarin_chancho_asado.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/Platos/tallarin_pollo_picado.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/Platos/tallarin_pollo_trozos.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/controlador/AtencionMesaDAO.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/controlador/CuentaDAO.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/controlador/DetallePedidoDAO.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/controlador/MesaDAO.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/controlador/MozoDAO.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/controlador/PedidoDAO.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/controlador/PlatoDAO.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/modelo/AtencionMesa.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/modelo/Cajero.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/modelo/Cuenta.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/modelo/DetallePedido.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/modelo/Empleado.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/modelo/EstadoCuenta.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/modelo/EstadoPedido.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/modelo/Home.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/modelo/Mesa.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/modelo/MetodoPago.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/modelo/Mozo.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/modelo/Pago.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/modelo/Pedido.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/modelo/Plato.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/restaurante/GestionPedidosRestaurante.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/service/AtencionMesaService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/service/CuentaService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/service/MesaService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/service/PedidoService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/service/PlatoService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/utilitarios/ConexionMySQL.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/vista/FrmAtencionMesa.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/vista/FrmCuenta.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/vista/FrmMesa.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/vista/FrmPedido.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/vista/FrmPlato.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/vista/FrmSeguimientoPedidos$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/vista/FrmSeguimientoPedidos.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/vista/Home$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/vista/Home.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GestionPedidosRestaurante/target/classes/vista/MainApp.class" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="DatabaseLocalColorSettings">
+    <colors>
+      <entry key="a100e876-e09b-49b3-bc34-8942b450a27d" value="" />
+      <entry key="pedido/sistemagestionrestaurante/a100e876-e09b-49b3-bc34-8942b450a27d:TABLE" value="yellow" />
+    </colors>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="JavaFXApplication" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 1
+}</component>
+  <component name="ProjectId" id="3KFimz3Z3bbdQqovzSlXZwkNNGD" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.ConexionMySQL.executor": "Run",
+    "Application.FrmDetallePedido.executor": "Run",
+    "Application.FrmPedido.executor": "Run",
+    "Application.GestionPedidosRestaurante.executor": "Run",
+    "Application.MainApp.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
+    "dart.analysis.tool.window.visible": "false",
+    "git-widget-placeholder": "rama-lenin",
+    "ignore.virus.scanning.warn.message": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/lenin/IdeaProjects/Sistema_Gestion_Pedidos_Restaurante/Sistema_Gestion_Pedidos_Restaurante/GestionPedidosRestaurante/src/main/java/service",
+    "node.js.detected.package.jshint": "true",
+    "node.js.selected.package.jshint": "",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "editor.preferences.completion.popup"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\lenin\IdeaProjects\Sistema_Gestion_Pedidos_Restaurante\Sistema_Gestion_Pedidos_Restaurante\GestionPedidosRestaurante\src\main\java\service" />
+      <recent name="C:\Users\lenin\IdeaProjects\Sistema_Gestion_Pedidos_Restaurante\Sistema_Gestion_Pedidos_Restaurante\GestionPedidosRestaurante\src\main\java\controlador" />
+      <recent name="C:\Users\lenin\IdeaProjects\Sistema_Gestion_Pedidos_Restaurante\Sistema_Gestion_Pedidos_Restaurante\GestionPedidosRestaurante\src\main\java\vista" />
+      <recent name="C:\Users\lenin\IdeaProjects\Sistema_Gestion_Pedidos_Restaurante\Sistema_Gestion_Pedidos_Restaurante\GestionPedidosRestaurante" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\lenin\IdeaProjects\Sistema_Gestion_Pedidos_Restaurante\Sistema_Gestion_Pedidos_Restaurante" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Application.MainApp">
+    <configuration name="ConexionMySQL" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="utilitarios.ConexionMySQL" />
+      <module name="GestionPedidosRestaurante" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="utilitarios.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="FrmDetallePedido" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="vista.FrmDetallePedido" />
+      <module name="GestionPedidosRestaurante" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="vista.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="FrmPedido" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="vista.FrmPedido" />
+      <module name="GestionPedidosRestaurante" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="vista.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="MainApp" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="vista.MainApp" />
+      <module name="GestionPedidosRestaurante" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="vista.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="JetRunConfigurationType">
+      <module name="GestionPedidosRestaurante" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <module name="GestionPedidosRestaurante" />
+      <option name="filePath" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.MainApp" />
+        <item itemvalue="Application.FrmPedido" />
+        <item itemvalue="Application.FrmDetallePedido" />
+        <item itemvalue="Application.ConexionMySQL" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-30f59d01ecdd-a203e0a19954-intellij.indexing.shared.core-IU-262.10968.63" />
+        <option value="bundled-js-predefined-d6986cc7102b-4abd2a77f808-JavaScript-IU-262.10968.63" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="1408cd96-0e24-4d8f-9693-18a24b745ca1" name="Changes" comment="" />
+      <created>1791159887383</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1791159887383</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="NONE" type="java-line">
+          <url>file://$PROJECT_DIR$/GestionPedidosRestaurante/src/main/java/service/PedidoService.java</url>
+          <line>35</line>
+          <placement>INTER_LINE</placement>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
+  </component>
+</project>

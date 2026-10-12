@@ -535,23 +535,28 @@ public class FrmAtencionMesa extends Application {
 
         alerta.showAndWait();
     }
+    
+    public void mostrar() {
+        Stage nuevaVentana = new Stage();
+        start(nuevaVentana);
+    }
 
     public static void main(String[] args) {
         launch(args);
     }
 
     private void seleccionarMesa(int mesaId) {
-        
+
         Mesa mesaEcontrada = null;
-        
+
         for (Mesa mesa : cboMesa.getItems()) {
 
-        if (mesa.getId() == mesaId) {
+            if (mesa.getId() == mesaId) {
 
-            cboMesa.setValue(mesa);
-            break;
+                mesaEcontrada = mesa;
+                break;
+            }
         }
-    }
         
         if(mesaEcontrada == null){
             Mesa mesa = atencionService.buscarMesa(mesaId);
@@ -594,11 +599,11 @@ public class FrmAtencionMesa extends Application {
     }
 
     private void cargarMozos() {
-        ObservableList<Mozo> listaMozos =
-            FXCollections.observableArrayList(
-                    mozoDAO.listar()
-            );
+        ObservableList<Mozo> listaMozos
+                = FXCollections.observableArrayList(
+                        mozoDAO.listar()
+                );
 
-    cboMozo.setItems(listaMozos);
+        cboMozo.setItems(listaMozos);
     }
 }
