@@ -111,6 +111,7 @@ public class PedidoDAO {
         pedido.setMozo(mozo);
         return pedido;
     }
+
     public List<Pedido> listarEntregadosSinCuenta() throws SQLException {
         List<Pedido> pedidosDisponibles = new ArrayList<>();
 
@@ -142,6 +143,37 @@ public class PedidoDAO {
         }
 
         return pedidosDisponibles;
+    }
+
+    public List<Pedido> listarEntregadosConCuentaPagada()
+            throws SQLException {
+
+        List<Pedido> lista = new ArrayList<>();
+
+        String sql = """
+        SELECT p.id, p.fechaHora, p.estado, p.subTotal,
+               m.id AS mesa_id, m.numero, m.capacidad,
+               m.estado AS mesa_estado,
+               mo.id AS mozo_id, e.nombre AS mozo_nombre,
+               e.dni, e.turno
+        FROM Pedido p
+        INNER JOIN Mesa m ON p.mesa_id = m.id
+        INNER JOIN Mozo mo ON p.mozo_id = mo.id
+        INNER JOIN Empleado e ON mo.id = e.id
+        INNER JOIN Cuenta c ON c.pedido_id = p.id
+        WHERE UPPER(p.estado) = 'ENTREGADO'
+          AND UPPER(c.estado) = 'PAGADO'
+        ORDER BY p.id DESC
+        """;
+
+        try (Connection conexion = ConexionMySQL.obtenerConexion(); PreparedStatement ps = conexion.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                lista.add(convertirPedido(rs));
+            }
+        }
+
+        return lista;
     }
 
 }
